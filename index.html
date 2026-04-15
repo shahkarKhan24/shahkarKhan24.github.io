@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Shahkar Javid — AI & Software Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Epilogue:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+:root{
+  --bg:#050508;--bg2:#09090f;--bg3:#0e0e1a;
+  --s1:#111120;--s2:#181830;
+  --b:rgba(120,120,220,0.1);--b2:rgba(0,229,255,0.15);
+  --c:#00e5ff;--c2:#ff4d00;--c3:#7c6af7;
+  --t:#d0d0e8;--t2:#7878a0;--t3:#3a3a60;
+  --w:#ffffff;
+  --g1:rgba(0,229,255,0.12);--g2:rgba(255,77,0,0.1);
+  --r:4px;
+  --font-display:'Bebas Neue',sans-serif;
+  --font-body:'Epilogue',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+body{background:var(--bg);color:var(--t);font-family:var(--font-body);overflow-x:hidden;cursor:none}
+::selection{background:rgba(0,229,255,0.2);color:var(--w)}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--c);border-radius:2px}
+
+/* ── CURSOR ── */
+#cursor{position:fixed;width:8px;height:8px;background:var(--c);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform 0.1s,width 0.25s,height 0.25s,opacity 0.25s;mix-blend-mode:difference}
+#cursor-ring{position:fixed;width:36px;height:36px;border:1px solid rgba(0,229,255,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:transform 0.08s linear,width 0.3s,height 0.3s,border-color 0.3s;mix-blend-mode:difference}
+body:has(a:hover) #cursor,body:has(button:hover) #cursor{width:16px;height:16px}
+body:has(a:hover) #cursor-ring,body:has(button:hover) #cursor-ring{width:56px;height:56px;border-color:rgba(0,229,255,0.8)}
+
+/* ── CANVAS ── */
+#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.6}
+
+/* ── GRAIN OVERLAY ── */
+.grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");background-repeat:repeat;background-size:128px 128px}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:1.4rem 5rem;display:flex;align-items:center;justify-content:space-between;transition:all 0.4s}
+nav.scrolled{background:rgba(5,5,8,0.88);backdrop-filter:blur(24px);border-bottom:1px solid var(--b)}
+.nav-logo{font-family:var(--font-display);font-size:1.6rem;color:var(--w);text-decoration:none;letter-spacing:0.08em;position:relative;z-index:1}
+.nav-logo span{color:var(--c)}
+.nav-links{display:flex;gap:3rem;list-style:none}
+.nav-links a{text-decoration:none;color:var(--t2);font-family:var(--font-mono);font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;position:relative;transition:color 0.3s;padding-bottom:4px}
+.nav-links a::after{content:'';position:absolute;bottom:0;left:0;width:0;height:1px;background:var(--c);transition:width 0.35s cubic-bezier(0.4,0,0.2,1)}
+.nav-links a:hover{color:var(--c)}
+.nav-links a:hover::after{width:100%}
+.nav-cta{font-family:var(--font-mono);font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;padding:0.6rem 1.4rem;border:1px solid var(--c);color:var(--c);text-decoration:none;position:relative;overflow:hidden;transition:color 0.3s}
+.nav-cta::before{content:'';position:absolute;inset:0;background:var(--c);transform:translateX(-101%);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1)}
+.nav-cta:hover{color:var(--bg)}
+.nav-cta:hover::before{transform:translateX(0)}
+.nav-cta span{position:relative;z-index:1}
+
+/* ── SECTIONS ── */
+section{position:relative;z-index:2}
+.pad{padding:8rem 5rem}
+.inner{max-width:1200px;margin:0 auto;width:100%}
+.eyebrow{font-family:var(--font-mono);font-size:0.68rem;color:var(--c);letter-spacing:0.25em;text-transform:uppercase;display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem}
+.eyebrow::before{content:'';display:block;width:2rem;height:1px;background:var(--c);flex-shrink:0}
+.section-title{font-family:var(--font-display);font-size:clamp(2.8rem,4.5vw,4rem);color:var(--w);letter-spacing:0.04em;line-height:1;margin-bottom:0.3rem}
+.section-title em{color:var(--c);font-style:italic;font-family:var(--font-body);font-weight:300;font-size:0.7em;letter-spacing:0.02em}
+
+/* ── HERO ── */
+#hero{min-height:100vh;display:flex;align-items:center;padding:0 5rem;padding-top:6rem;overflow:hidden}
+.hero-inner{max-width:1200px;margin:0 auto;width:100%;display:grid;grid-template-columns:1.1fr 0.9fr;gap:5rem;align-items:center}
+.hero-tag{font-family:var(--font-mono);font-size:0.68rem;color:var(--c);letter-spacing:0.25em;text-transform:uppercase;display:flex;align-items:center;gap:0.8rem;margin-bottom:2rem;opacity:0;animation:slideRight 0.9s 0.2s cubic-bezier(0.16,1,0.3,1) forwards}
+.hero-tag::before{content:'';display:block;width:3rem;height:1px;background:var(--c)}
+.hero-tag-dot{width:6px;height:6px;background:var(--c2);border-radius:50%;animation:pulseDot 2s infinite}
+.hero-name{font-family:var(--font-display);font-size:clamp(4rem,8vw,7.5rem);color:var(--w);line-height:0.95;letter-spacing:0.04em;margin-bottom:0.5rem;opacity:0;animation:slideRight 0.9s 0.4s cubic-bezier(0.16,1,0.3,1) forwards;position:relative}
+.hero-name-accent{color:var(--c);display:block}
+.hero-subtitle{font-size:1.05rem;color:var(--t2);font-weight:400;letter-spacing:0.04em;margin-bottom:2rem;opacity:0;animation:slideRight 0.9s 0.6s cubic-bezier(0.16,1,0.3,1) forwards;min-height:1.5em}
+.hero-desc{font-size:1rem;color:var(--t2);line-height:1.85;max-width:500px;margin-bottom:3rem;opacity:0;animation:slideRight 0.9s 0.75s cubic-bezier(0.16,1,0.3,1) forwards}
+.hero-desc strong{color:var(--t)}
+.hero-ctas{display:flex;gap:1.2rem;flex-wrap:wrap;opacity:0;animation:slideRight 0.9s 0.9s cubic-bezier(0.16,1,0.3,1) forwards}
+.btn-mag{display:inline-flex;align-items:center;gap:0.6rem;padding:0.9rem 2.2rem;font-family:var(--font-mono);font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;cursor:none;position:relative;overflow:hidden;transition:color 0.3s}
+.btn-fill{background:var(--c);color:var(--bg);border:1px solid var(--c)}
+.btn-fill::before{content:'';position:absolute;inset:0;background:var(--w);transform:translateY(101%);transition:transform 0.35s cubic-bezier(0.4,0,0.2,1)}
+.btn-fill:hover{color:var(--bg)}
+.btn-fill:hover::before{transform:translateY(0)}
+.btn-fill span,.btn-ghost span{position:relative;z-index:1;display:flex;align-items:center;gap:0.6rem}
+.btn-ghost{background:transparent;color:var(--t);border:1px solid var(--b)}
+.btn-ghost::before{content:'';position:absolute;inset:0;background:var(--s1);transform:translateY(101%);transition:transform 0.35s cubic-bezier(0.4,0,0.2,1)}
+.btn-ghost:hover{border-color:var(--t3)}
+.btn-ghost:hover::before{transform:translateY(0)}
+.arrow-icon{width:14px;height:14px;transition:transform 0.3s}
+.btn-fill:hover .arrow-icon,.btn-ghost:hover .arrow-icon{transform:translateX(4px)}
+.hero-socials{display:flex;gap:0.8rem;margin-top:2.5rem;opacity:0;animation:slideRight 0.9s 1.05s cubic-bezier(0.16,1,0.3,1) forwards}
+.soc-btn{width:2.6rem;height:2.6rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--b);color:var(--t3);text-decoration:none;transition:all 0.3s;position:relative;overflow:hidden}
+.soc-btn::before{content:'';position:absolute;inset:0;background:rgba(0,229,255,0.08);transform:scale(0);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);border-radius:50%}
+.soc-btn:hover{border-color:var(--c);color:var(--c)}
+.soc-btn:hover::before{transform:scale(2)}
+.soc-btn svg{position:relative;z-index:1}
+
+/* Hero right */
+.hero-right{opacity:0;animation:fadeScale 1.2s 0.8s cubic-bezier(0.16,1,0.3,1) forwards;position:relative}
+.hero-visual{position:relative}
+.hero-visual::before{content:'';position:absolute;inset:-2px;background:linear-gradient(135deg,var(--c),var(--c3),transparent,transparent);border-radius:2px;z-index:0;opacity:0.5}
+.hero-card{background:var(--bg3);border:1px solid var(--b);padding:2.5rem;position:relative;z-index:1;overflow:hidden}
+.hero-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--c),var(--c3),transparent)}
+.card-header{font-family:var(--font-mono);font-size:0.62rem;color:var(--t3);letter-spacing:0.18em;margin-bottom:2rem;display:flex;align-items:center;gap:0.6rem}
+.card-header::before{content:'';display:block;width:8px;height:8px;background:var(--c);border-radius:50%;animation:pulseDot 2s infinite}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--b);margin-bottom:1px}
+.stat-cell{background:var(--bg3);padding:1.4rem 1.2rem;transition:background 0.2s}
+.stat-cell:hover{background:var(--s1)}
+.stat-val{font-family:var(--font-display);font-size:2.6rem;color:var(--w);line-height:1;letter-spacing:0.04em}
+.stat-val span{color:var(--c);font-size:1.6rem}
+.stat-key{font-family:var(--font-mono);font-size:0.6rem;color:var(--t3);letter-spacing:0.1em;margin-top:0.3rem;text-transform:uppercase}
+.stack-bar{background:var(--bg3);border:1px solid var(--b);border-top:none;padding:1.4rem 1.2rem}
+.stack-label{font-family:var(--font-mono);font-size:0.6rem;color:var(--t3);letter-spacing:0.15em;margin-bottom:0.8rem;text-transform:uppercase}
+.stack-chips{display:flex;flex-wrap:wrap;gap:0.4rem}
+.chip{font-family:var(--font-mono);font-size:0.58rem;padding:0.25rem 0.6rem;border:1px solid var(--b);color:var(--t2);letter-spacing:0.06em;transition:all 0.2s;background:rgba(0,229,255,0.03)}
+.chip:hover{border-color:var(--c);color:var(--c);background:rgba(0,229,255,0.08)}
+.hero-deco{position:absolute;right:-60px;top:50%;transform:translateY(-50%);opacity:0.04;pointer-events:none}
+
+/* ── ABOUT ── */
+#about{background:var(--bg2)}
+.about-grid{display:grid;grid-template-columns:0.8fr 1.2fr;gap:6rem;align-items:start}
+.about-img-wrap{position:relative;width:100%}
+.img-container{position:relative;width:100%;aspect-ratio:3/4;max-width:300px;overflow:hidden}
+.img-container img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block;filter:grayscale(20%) contrast(1.05)}
+.img-container::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 60%,rgba(0,229,255,0.08))}
+.img-border{position:absolute;inset:-10px;border:1px solid rgba(0,229,255,0.2);z-index:-1;transition:inset 0.4s}
+.img-container:hover ~ .img-border{inset:-15px}
+.img-accent{position:absolute;bottom:-20px;right:-20px;width:80px;height:80px;border:1px solid rgba(0,229,255,0.15);z-index:-1}
+.about-badge{position:absolute;bottom:-1rem;left:-1rem;background:var(--bg3);border:1px solid var(--b);padding:1rem 1.2rem;min-width:160px}
+.badge-line{font-family:var(--font-mono);font-size:0.58rem;color:var(--t3);letter-spacing:0.1em;margin-bottom:0.3rem;text-transform:uppercase}
+.badge-val{font-size:0.85rem;color:var(--w);font-weight:600}
+.badge-val span{color:var(--c)}
+.about-text{font-size:1.02rem;color:var(--t2);line-height:1.9;margin-bottom:1.3rem}
+.about-text strong{color:var(--t);font-weight:600}
+.about-features{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--b);border:1px solid var(--b);margin-top:2.5rem}
+.feat-item{background:var(--bg2);padding:1.4rem;position:relative;overflow:hidden;transition:background 0.3s;cursor:default}
+.feat-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--c),var(--c3));transform:scaleY(0);transform-origin:top;transition:transform 0.4s cubic-bezier(0.4,0,0.2,1)}
+.feat-item:hover{background:var(--s1)}
+.feat-item:hover::before{transform:scaleY(1)}
+.feat-icon{width:32px;height:32px;margin-bottom:0.9rem;color:var(--c);opacity:0.8}
+.feat-title{font-size:0.85rem;font-weight:700;color:var(--w);margin-bottom:0.35rem}
+.feat-text{font-size:0.75rem;color:var(--t3);line-height:1.6}
+
+/* ── SKILLS ── */
+#skills{}
+.skills-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.sk-card{background:var(--s1);border:1px solid var(--b);padding:2rem;position:relative;overflow:hidden;transition:border-color 0.3s,transform 0.4s cubic-bezier(0.34,1.56,0.64,1);transform-style:preserve-3d;will-change:transform}
+.sk-card:hover{border-color:rgba(0,229,255,0.3);transform:translateY(-6px)}
+.sk-card-glow{position:absolute;width:200px;height:200px;background:radial-gradient(circle,rgba(0,229,255,0.08),transparent 70%);border-radius:50%;pointer-events:none;transition:opacity 0.3s;opacity:0;transform:translate(-50%,-50%)}
+.sk-card:hover .sk-card-glow{opacity:1}
+.sk-icon{width:40px;height:40px;color:var(--c);margin-bottom:1.2rem;opacity:0.9}
+.sk-title{font-size:0.9rem;font-weight:700;color:var(--w);margin-bottom:1.2rem;letter-spacing:0.03em}
+.sk-pills{display:flex;flex-wrap:wrap;gap:0.4rem}
+.sk-pill{font-family:var(--font-mono);font-size:0.58rem;padding:0.22rem 0.55rem;border:1px solid var(--b);color:var(--t2);letter-spacing:0.05em;transition:all 0.2s;background:rgba(255,255,255,0.02)}
+.sk-pill:hover{border-color:rgba(0,229,255,0.3);color:var(--c);background:rgba(0,229,255,0.06)}
+.sk-bar-wrap{margin-top:1.5rem}
+.sk-bar-label{font-family:var(--font-mono);font-size:0.6rem;color:var(--t3);letter-spacing:0.12em;display:flex;justify-content:space-between;margin-bottom:0.4rem}
+.sk-bar-track{height:2px;background:var(--b);position:relative;overflow:hidden}
+.sk-bar-fill{height:100%;background:linear-gradient(90deg,var(--c),var(--c3));width:0;transition:width 1.2s cubic-bezier(0.4,0,0.2,1)}
+
+/* ── EXPERIENCE ── */
+#experience{background:var(--bg2)}
+.tl{position:relative;padding-left:2px}
+.tl-line{position:absolute;left:0;top:0;bottom:0;width:1px;background:var(--b);overflow:hidden}
+.tl-line-fill{position:absolute;top:0;left:0;right:0;height:0;background:linear-gradient(to bottom,var(--c),var(--c3));transition:height 1.5s cubic-bezier(0.4,0,0.2,1)}
+.tl-item{padding:0 0 4rem 3.5rem;position:relative;opacity:0;transform:translateY(20px);transition:opacity 0.7s,transform 0.7s}
+.tl-item.visible{opacity:1;transform:translateY(0)}
+.tl-node{position:absolute;left:-5px;top:6px;width:11px;height:11px;background:var(--bg2);border:1.5px solid var(--c);transform:rotate(45deg);transition:background 0.3s}
+.tl-item:hover .tl-node{background:var(--c)}
+.tl-period{font-family:var(--font-mono);font-size:0.65rem;color:var(--c);letter-spacing:0.15em;margin-bottom:0.7rem}
+.tl-role{font-family:var(--font-display);font-size:1.8rem;color:var(--w);letter-spacing:0.06em;margin-bottom:0.3rem;line-height:1}
+.tl-company{font-size:0.88rem;color:var(--c2);margin-bottom:0.2rem}
+.tl-company a{color:var(--c2);text-decoration:none}
+.tl-company a:hover{text-decoration:underline}
+.tl-loc{font-family:var(--font-mono);font-size:0.62rem;color:var(--t3);letter-spacing:0.1em;margin-bottom:1.3rem;display:flex;align-items:center;gap:0.5rem}
+.tl-loc svg{width:12px;height:12px;color:var(--t3)}
+.tl-list{list-style:none}
+.tl-list li{font-size:0.88rem;color:var(--t2);line-height:1.75;padding:0.25rem 0 0.25rem 1.5rem;position:relative}
+.tl-list li::before{content:'';position:absolute;left:0;top:50%;width:8px;height:1px;background:var(--c);opacity:0.5;margin-top:-0.5px}
+.tl-tags{display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:1rem}
+.tl-tag{font-family:var(--font-mono);font-size:0.58rem;padding:0.2rem 0.6rem;border:1px solid rgba(0,229,255,0.15);color:var(--c);letter-spacing:0.06em;background:rgba(0,229,255,0.04)}
+
+/* ── EDUCATION ── */
+#education{}
+.edu-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem}
+.edu-card{background:var(--s1);border:1px solid var(--b);padding:2.2rem;position:relative;overflow:hidden;transition:border-color 0.3s,transform 0.35s cubic-bezier(0.34,1.56,0.64,1)}
+.edu-card:hover{border-color:rgba(255,77,0,0.3);transform:translateY(-4px)}
+.edu-card::before{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--c2),transparent);transform:scaleX(0);transform-origin:left;transition:transform 0.5s cubic-bezier(0.4,0,0.2,1)}
+.edu-card:hover::before{transform:scaleX(1)}
+.edu-icon{width:36px;height:36px;color:var(--c2);margin-bottom:1.2rem;opacity:0.8}
+.edu-degree{font-size:1rem;font-weight:800;color:var(--w);margin-bottom:0.5rem;line-height:1.35}
+.edu-school{font-size:0.85rem;color:var(--c2);margin-bottom:0.4rem}
+.edu-period{font-family:var(--font-mono);font-size:0.62rem;color:var(--t3);letter-spacing:0.1em;margin-bottom:1rem}
+.edu-subjects{font-size:0.78rem;color:var(--t3);line-height:1.7}
+
+/* ── PROJECTS ── */
+#projects{background:var(--bg2)}
+.proj-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.proj-card{background:var(--s1);border:1px solid var(--b);padding:2rem;display:flex;flex-direction:column;position:relative;overflow:hidden;transition:border-color 0.3s;transform-style:preserve-3d;cursor:none}
+.proj-card::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,229,255,0.03),transparent);opacity:0;transition:opacity 0.4s}
+.proj-card:hover{border-color:rgba(124,106,247,0.4)}
+.proj-card:hover::after{opacity:1}
+.proj-num{font-family:var(--font-mono);font-size:0.6rem;color:var(--t3);letter-spacing:0.2em;margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem}
+.proj-num::after{content:'';display:block;flex:1;height:1px;background:var(--b)}
+.proj-icon{width:32px;height:32px;color:var(--c3);margin-bottom:1rem;opacity:0.8}
+.proj-title{font-size:0.95rem;font-weight:700;color:var(--w);margin-bottom:0.7rem;line-height:1.4}
+.proj-desc{font-size:0.78rem;color:var(--t2);line-height:1.75;flex:1;margin-bottom:1.2rem}
+.proj-tags{display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:1.2rem}
+.proj-tag{font-family:var(--font-mono);font-size:0.56rem;padding:0.18rem 0.5rem;border:1px solid rgba(124,106,247,0.25);color:var(--c3);background:rgba(124,106,247,0.06)}
+.proj-link{font-family:var(--font-mono);font-size:0.65rem;color:var(--t3);text-decoration:none;letter-spacing:0.08em;display:inline-flex;align-items:center;gap:0.5rem;transition:color 0.2s;margin-top:auto}
+.proj-link:hover{color:var(--c)}
+.proj-link svg{width:12px;height:12px;transition:transform 0.2s}
+.proj-link:hover svg{transform:translate(2px,-2px)}
+
+/* ── CERTS ── */
+#certs{}
+.cert-row{display:flex;gap:1.5rem;flex-wrap:wrap}
+.cert-card{flex:1;min-width:280px;background:var(--s1);border:1px solid var(--b);padding:2rem;position:relative;overflow:hidden;transition:border-color 0.3s,transform 0.35s cubic-bezier(0.34,1.56,0.64,1)}
+.cert-card:hover{border-color:rgba(0,229,255,0.3);transform:translateY(-3px)}
+.cert-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--c),var(--c3));opacity:0;transition:opacity 0.3s}
+.cert-card:hover::before{opacity:1}
+.cert-icon{width:32px;height:32px;color:var(--c);margin-bottom:1rem;opacity:0.8}
+.cert-status{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.18em;text-transform:uppercase;padding:0.2rem 0.6rem;border:1px solid;display:inline-block;margin-bottom:0.8rem}
+.cert-status.active{color:var(--c);border-color:rgba(0,229,255,0.3);background:rgba(0,229,255,0.06)}
+.cert-status.planned{color:var(--t3);border-color:var(--b)}
+.cert-title{font-size:0.95rem;font-weight:700;color:var(--w);margin-bottom:0.3rem}
+.cert-org{font-size:0.78rem;color:var(--t3)}
+
+/* ── CONTACT ── */
+#contact{background:var(--bg2)}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:center}
+.contact-headline{font-family:var(--font-display);font-size:clamp(3rem,5vw,4.5rem);color:var(--w);letter-spacing:0.04em;line-height:1;margin-bottom:1.5rem}
+.contact-headline em{display:block;color:var(--c);font-style:italic;font-family:var(--font-body);font-weight:300;font-size:0.65em;letter-spacing:0.02em}
+.contact-sub{font-size:1rem;color:var(--t2);line-height:1.8;margin-bottom:2.5rem}
+.contact-items{display:flex;flex-direction:column;gap:1rem}
+.ci{display:flex;align-items:center;gap:1.2rem;padding:1.3rem 1.5rem;background:var(--s1);border:1px solid var(--b);text-decoration:none;color:var(--t);position:relative;overflow:hidden;transition:border-color 0.3s;cursor:none}
+.ci::before{content:'';position:absolute;left:0;top:0;bottom:0;width:0;background:rgba(0,229,255,0.06);transition:width 0.4s cubic-bezier(0.4,0,0.2,1)}
+.ci:hover{border-color:rgba(0,229,255,0.3)}
+.ci:hover::before{width:100%}
+.ci-icon{width:20px;height:20px;color:var(--c);flex-shrink:0;position:relative;z-index:1;opacity:0.8}
+.ci-body{position:relative;z-index:1}
+.ci-label{font-family:var(--font-mono);font-size:0.58rem;color:var(--t3);letter-spacing:0.14em;text-transform:uppercase;display:block;margin-bottom:0.2rem}
+.ci-val{font-size:0.88rem;font-weight:600;color:var(--t);transition:color 0.3s}
+.ci:hover .ci-val{color:var(--c)}
+.ci-arrow{margin-left:auto;position:relative;z-index:1;color:var(--t3);opacity:0;transform:translateX(-8px);transition:opacity 0.3s,transform 0.3s}
+.ci:hover .ci-arrow{opacity:1;transform:translateX(0)}
+
+/* ── FOOTER ── */
+footer{background:var(--bg);padding:2rem 5rem;border-top:1px solid var(--b);display:flex;align-items:center;justify-content:space-between;position:relative;z-index:2}
+.ft-copy{font-family:var(--font-mono);font-size:0.62rem;color:var(--t3);letter-spacing:0.1em}
+.ft-right{font-family:var(--font-mono);font-size:0.62rem;color:var(--t3);letter-spacing:0.06em;display:flex;align-items:center;gap:0.5rem}
+.ft-dot{width:6px;height:6px;background:var(--c);border-radius:50%;animation:pulseDot 2s infinite}
+
+/* ── ANIMATIONS ── */
+@keyframes slideRight{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:translateX(0)}}
+@keyframes fadeScale{from{opacity:0;transform:scale(0.93)}to{opacity:1;transform:scale(1)}}
+@keyframes pulseDot{0%,100%{box-shadow:0 0 0 0 rgba(0,229,255,0.4)}50%{box-shadow:0 0 0 6px rgba(0,229,255,0)}}
+@keyframes lineGrow{from{height:0}to{height:100%}}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+.reveal{opacity:0;transform:translateY(28px);transition:opacity 0.8s cubic-bezier(0.16,1,0.3,1),transform 0.8s cubic-bezier(0.16,1,0.3,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-left{opacity:0;transform:translateX(-30px);transition:opacity 0.8s cubic-bezier(0.16,1,0.3,1),transform 0.8s cubic-bezier(0.16,1,0.3,1)}
+.reveal-left.visible{opacity:1;transform:translateX(0)}
+.reveal-right{opacity:0;transform:translateX(30px);transition:opacity 0.8s cubic-bezier(0.16,1,0.3,1),transform 0.8s cubic-bezier(0.16,1,0.3,1)}
+.reveal-right.visible{opacity:1;transform:translateX(0)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:960px){
+  nav{padding:1rem 1.5rem}
+  .nav-links,.nav-cta{display:none}
+  .pad{padding:5rem 1.5rem}
+  #hero{padding:0 1.5rem}
+  .hero-inner,.about-grid,.contact-grid{grid-template-columns:1fr}
+  .hero-right,.hero-deco{display:none}
+  .skills-grid,.proj-grid{grid-template-columns:1fr 1fr}
+  .edu-grid{grid-template-columns:1fr}
+  footer{flex-direction:column;gap:0.5rem;padding:1.5rem}
+}
+@media(max-width:600px){
+  .skills-grid,.proj-grid{grid-template-columns:1fr}
+  .about-features{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+<div class="grain"></div>
+<canvas id="bg-canvas"></canvas>
+
+<!-- NAV -->
+<nav id="nav">
+  <a class="nav-logo" href="#hero">SJ<span>.</span></a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="mailto:shahkarkhan24@gmail.com" class="nav-cta"><span>Hire Me</span></a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-tag"><div class="hero-tag-dot"></div>Available for opportunities</div>
+      <h1 class="hero-name">
+        SHAHKAR<br>
+        <span class="hero-name-accent" id="scramble-target">JAVID</span>
+      </h1>
+      <p class="hero-subtitle"><span id="typewriter"></span><span class="tw-cursor">|</span></p>
+      <p class="hero-desc">
+        Building <strong>intelligent systems</strong> at the intersection of machine learning and real-world infrastructure — thermal-adaptive HPC controllers, predictive maintenance, and beyond. Currently at <strong>GemaTEG SRL</strong>.
+      </p>
+      <div class="hero-ctas">
+        <a href="#projects" class="btn-mag btn-fill"><span>View Projects <svg class="arrow-icon" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h12M8 2l5 5-5 5"/></svg></span></a>
+        <a href="#contact" class="btn-mag btn-ghost"><span>Get in Touch</span></a>
+      </div>
+      <div class="hero-socials">
+        <a href="https://github.com/shahkarKhan24/" target="_blank" class="soc-btn" title="GitHub">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.49 1 .11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 013-.4c1.02.005 2.04.14 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58C20.57 21.79 24 17.3 24 12 24 5.37 18.63 0 12 0z"/></svg>
+        </a>
+        <a href="https://www.linkedin.com/in/shahkar-javid-3a5553198/" target="_blank" class="soc-btn" title="LinkedIn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.35-1.85 3.58 0 4.25 2.36 4.25 5.43v6.31zM5.34 7.43a2.06 2.06 0 110-4.12 2.06 2.06 0 010 4.12zm1.78 13.02H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
+        </a>
+        <a href="mailto:shahkarkhan24@gmail.com" class="soc-btn" title="Email">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="1.5"/><polyline points="2,4 12,13 22,4"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-visual">
+        <div class="hero-card">
+          <div class="card-header">CURRENT_STATUS.JSON</div>
+          <div class="stats-grid">
+            <div class="stat-cell"><div class="stat-val" data-count="3">0</div><div class="stat-key">Years Active</div></div>
+            <div class="stat-cell"><div class="stat-val" data-count="10">0</div><div class="stat-key">AI Projects</div></div>
+            <div class="stat-cell"><div class="stat-val" data-count="2">0</div><div class="stat-key">Degrees</div></div>
+            <div class="stat-cell"><div class="stat-val" data-count="4">0</div><div class="stat-key">Companies</div></div>
+          </div>
+          <div class="stack-bar">
+            <div class="stack-label">CORE_STACK</div>
+            <div class="stack-chips">
+              <span class="chip">PyTorch</span><span class="chip">TensorFlow</span><span class="chip">Python</span>
+              <span class="chip">AWS</span><span class="chip">Prometheus</span><span class="chip">LangChain</span>
+              <span class="chip">ROS</span><span class="chip">FastAPI</span><span class="chip">C++</span><span class="chip">Docker</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Decorative SVG -->
+      <svg class="hero-deco" width="300" height="300" viewBox="0 0 300 300" fill="none">
+        <circle cx="150" cy="150" r="140" stroke="white" stroke-width="0.5"/>
+        <circle cx="150" cy="150" r="100" stroke="white" stroke-width="0.5"/>
+        <circle cx="150" cy="150" r="60" stroke="white" stroke-width="0.5"/>
+        <line x1="150" y1="10" x2="150" y2="290" stroke="white" stroke-width="0.5"/>
+        <line x1="10" y1="150" x2="290" y2="150" stroke="white" stroke-width="0.5"/>
+        <line x1="51" y1="51" x2="249" y2="249" stroke="white" stroke-width="0.5"/>
+        <line x1="249" y1="51" x2="51" y2="249" stroke="white" stroke-width="0.5"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" class="pad">
+  <div class="inner">
+    <div class="about-grid">
+      <div class="reveal-left" style="transition-delay:0.1s">
+        <div class="about-img-wrap">
+          <div class="img-container">
+            <img src="https://avatars.githubusercontent.com/u/79767784?v=4" alt="Shahkar Javid" onerror="this.style.display='none'"/>
+          </div>
+          <div class="img-border"></div>
+          <div class="img-accent"></div>
+          <div class="about-badge">
+            <div class="badge-line">LOCATION</div>
+            <div class="badge-val">Perugia<span>, IT</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal-right" style="transition-delay:0.2s">
+        <div style="margin-bottom:2.5rem">
+          <div class="eyebrow">About Me</div>
+          <div class="section-title">AI Engineer by <em>passion</em></div>
+        </div>
+        <p class="about-text">I'm an <strong>AI & Software Engineer</strong> with a Master's in AI & Robotics from La Sapienza, Rome, and a background in Electrical Engineering from Air University. I specialize in building end-to-end intelligent systems — from training deep learning models to deploying them in production.</p>
+        <p class="about-text">Currently at <strong>GemaTEG SRL</strong>, I work on thermoelectric cooling systems for HPC/GPU servers, combining ML-based predictive maintenance with classical control theory to push the limits of AI-driven infrastructure.</p>
+        <p class="about-text">My work spans <strong>computer vision, NLP, time-series forecasting, anomaly detection,</strong> and adaptive control systems — always with a focus on real-world deployability and measurable impact.</p>
+        <div class="about-features">
+          <div class="feat-item">
+            <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+            <div class="feat-title">Deep Learning</div>
+            <div class="feat-text">CNNs, Transformers, GANs, Vision Transformers, LLM fine-tuning</div>
+          </div>
+          <div class="feat-item">
+            <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M7 8h10M7 12h6"/></svg>
+            <div class="feat-title">Industrial AI</div>
+            <div class="feat-text">Thermal profiling, predictive maintenance, PID + ML control</div>
+          </div>
+          <div class="feat-item">
+            <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            <div class="feat-title">Cloud & MLOps</div>
+            <div class="feat-text">AWS (EC2, S3, SageMaker), Docker, CI/CD, Apache Airflow</div>
+          </div>
+          <div class="feat-item">
+            <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 010 8.49m-8.49-.01a6 6 0 010-8.49m11.31-2.82a10 10 0 010 14.14m-14.14 0a10 10 0 010-14.14"/></svg>
+            <div class="feat-title">Robotics & Planning</div>
+            <div class="feat-text">ROS, A* path planning, PDDL numeric planning, control systems</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills" class="pad">
+  <div class="inner">
+    <div style="margin-bottom:4rem" class="reveal">
+      <div class="eyebrow">Technical Arsenal</div>
+      <div class="section-title">What I <em>work with</em></div>
+    </div>
+    <div class="skills-grid">
+      <div class="sk-card reveal" style="transition-delay:0s">
+        <div class="sk-card-glow"></div>
+        <svg class="sk-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+        <div class="sk-title">Machine Learning & Deep Learning</div>
+        <div class="sk-pills">
+          <span class="sk-pill">PyTorch</span><span class="sk-pill">TensorFlow</span><span class="sk-pill">Keras</span>
+          <span class="sk-pill">Scikit-learn</span><span class="sk-pill">XGBoost</span><span class="sk-pill">PyTorch Lightning</span>
+          <span class="sk-pill">Hugging Face</span><span class="sk-pill">LangChain</span><span class="sk-pill">PyTorch3D</span>
+        </div>
+        <div class="sk-bar-wrap">
+          <div class="sk-bar-label"><span>PROFICIENCY</span><span>95%</span></div>
+          <div class="sk-bar-track"><div class="sk-bar-fill" data-width="95"></div></div>
+        </div>
+      </div>
+      <div class="sk-card reveal" style="transition-delay:0.1s">
+        <div class="sk-card-glow"></div>
+        <svg class="sk-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/></svg>
+        <div class="sk-title">Computer Vision & NLP</div>
+        <div class="sk-pills">
+          <span class="sk-pill">OpenCV</span><span class="sk-pill">YOLO</span><span class="sk-pill">Faster R-CNN</span>
+          <span class="sk-pill">Vision Transformers</span><span class="sk-pill">CLIP</span><span class="sk-pill">BERT</span>
+          <span class="sk-pill">GPT / LLaMA</span><span class="sk-pill">RoBERTa</span><span class="sk-pill">SpaCy</span>
+        </div>
+        <div class="sk-bar-wrap">
+          <div class="sk-bar-label"><span>PROFICIENCY</span><span>92%</span></div>
+          <div class="sk-bar-track"><div class="sk-bar-fill" data-width="92"></div></div>
+        </div>
+      </div>
+      <div class="sk-card reveal" style="transition-delay:0.2s">
+        <div class="sk-card-glow"></div>
+        <svg class="sk-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        <div class="sk-title">Python & Core Stack</div>
+        <div class="sk-pills">
+          <span class="sk-pill">Python</span><span class="sk-pill">NumPy</span><span class="sk-pill">Pandas</span>
+          <span class="sk-pill">C++</span><span class="sk-pill">Bash</span><span class="sk-pill">SQL</span>
+          <span class="sk-pill">FastAPI</span><span class="sk-pill">REST APIs</span><span class="sk-pill">HTML/CSS</span>
+        </div>
+        <div class="sk-bar-wrap">
+          <div class="sk-bar-label"><span>PROFICIENCY</span><span>93%</span></div>
+          <div class="sk-bar-track"><div class="sk-bar-fill" data-width="93"></div></div>
+        </div>
+      </div>
+      <div class="sk-card reveal" style="transition-delay:0.05s">
+        <div class="sk-card-glow"></div>
+        <svg class="sk-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/></svg>
+        <div class="sk-title">Cloud & Infrastructure</div>
+        <div class="sk-pills">
+          <span class="sk-pill">AWS EC2</span><span class="sk-pill">S3</span><span class="sk-pill">SageMaker</span>
+          <span class="sk-pill">Lambda</span><span class="sk-pill">Azure OpenAI</span><span class="sk-pill">Docker</span>
+          <span class="sk-pill">Jenkins</span><span class="sk-pill">Prometheus</span><span class="sk-pill">Airflow</span>
+        </div>
+        <div class="sk-bar-wrap">
+          <div class="sk-bar-label"><span>PROFICIENCY</span><span>85%</span></div>
+          <div class="sk-bar-track"><div class="sk-bar-fill" data-width="85"></div></div>
+        </div>
+      </div>
+      <div class="sk-card reveal" style="transition-delay:0.15s">
+        <div class="sk-card-glow"></div>
+        <svg class="sk-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+        <div class="sk-title">Robotics & Control Systems</div>
+        <div class="sk-pills">
+          <span class="sk-pill">ROS / RViz</span><span class="sk-pill">PDDL</span><span class="sk-pill">PID Control</span>
+          <span class="sk-pill">FPGA</span><span class="sk-pill">IPMI</span><span class="sk-pill">turbostat</span>
+          <span class="sk-pill">Embedded Systems</span><span class="sk-pill">A*</span>
+        </div>
+        <div class="sk-bar-wrap">
+          <div class="sk-bar-label"><span>PROFICIENCY</span><span>80%</span></div>
+          <div class="sk-bar-track"><div class="sk-bar-fill" data-width="80"></div></div>
+        </div>
+      </div>
+      <div class="sk-card reveal" style="transition-delay:0.25s">
+        <div class="sk-card-glow"></div>
+        <svg class="sk-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        <div class="sk-title">Data & Analytics</div>
+        <div class="sk-pills">
+          <span class="sk-pill">Pandas</span><span class="sk-pill">Matplotlib</span><span class="sk-pill">Seaborn</span>
+          <span class="sk-pill">Jupyter</span><span class="sk-pill">ETL Pipelines</span><span class="sk-pill">SQL</span>
+          <span class="sk-pill">Tesseract OCR</span><span class="sk-pill">Google Vision</span>
+        </div>
+        <div class="sk-bar-wrap">
+          <div class="sk-bar-label"><span>PROFICIENCY</span><span>90%</span></div>
+          <div class="sk-bar-track"><div class="sk-bar-fill" data-width="90"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience" class="pad">
+  <div class="inner">
+    <div style="margin-bottom:4rem" class="reveal">
+      <div class="eyebrow">Work History</div>
+      <div class="section-title">Where I've <em>built</em> things</div>
+    </div>
+    <div class="tl">
+      <div class="tl-line"><div class="tl-line-fill" id="tl-fill"></div></div>
+
+      <div class="tl-item">
+        <div class="tl-node"></div>
+        <div class="tl-period">AUG 2025 — PRESENT</div>
+        <div class="tl-role">AI & SOFTWARE ENGINEER</div>
+        <div class="tl-company"><a href="https://www.gemateg.com/" target="_blank">GemaTEG SRL</a></div>
+        <div class="tl-loc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Perugia, Italy</div>
+        <ul class="tl-list">
+          <li>Developed AI-driven adaptive control systems combining ML with classical PID control to optimize thermoelectric cooling for HPC and GPU-based servers</li>
+          <li>Designed Linux-based server monitoring pipelines using Prometheus to collect real-time metrics including temperature, GPU/CPU utilization, and memory usage</li>
+          <li>Built time-series forecasting models to predict future temperature trends, enabling proactive thermal regulation</li>
+          <li>Conducted thermal profiling of Large Language Models on GPUs to evaluate cooling efficiency and performance trade-offs</li>
+          <li>Collaborated with hardware teams to design predictive maintenance pipelines using AI</li>
+        </ul>
+        <div class="tl-tags">
+          <span class="tl-tag">Prometheus</span><span class="tl-tag">Time-Series Forecasting</span><span class="tl-tag">PID Control</span><span class="tl-tag">Predictive Maintenance</span><span class="tl-tag">Python</span>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-node"></div>
+        <div class="tl-period">DEC 2024 — MAY 2025</div>
+        <div class="tl-role">AI INTERN</div>
+        <div class="tl-company">Radoff</div>
+        <div class="tl-loc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Remote, Italy</div>
+        <ul class="tl-list">
+          <li>Designed and implemented end-to-end ML pipelines for time series forecasting and anomaly detection</li>
+          <li>Deployed ML solutions on AWS, leveraging EC2, S3, Lambda, and SageMaker for scalable production deployment</li>
+          <li>Employed Agile methodologies and MLOps best practices with CI/CD pipelines using Git, Docker, and Jenkins</li>
+          <li>Built automated ETL pipelines using Python and Apache Airflow with advanced feature engineering</li>
+        </ul>
+        <div class="tl-tags">
+          <span class="tl-tag">AWS SageMaker</span><span class="tl-tag">MLOps</span><span class="tl-tag">Docker</span><span class="tl-tag">Airflow</span><span class="tl-tag">Anomaly Detection</span>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-node"></div>
+        <div class="tl-period">FEB 2025 — MAR 2025</div>
+        <div class="tl-role">AI DEVELOPER INTERN</div>
+        <div class="tl-company">BSA Underwriting Agency</div>
+        <div class="tl-loc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Rome, Italy</div>
+        <ul class="tl-list">
+          <li>Developed intelligent data extraction workflows from emails using LLMs (LLaMA, BERT, GPT) via REST APIs</li>
+          <li>Built automated pipelines for extracting tabular/textual data from PDFs using OCR APIs (Tesseract, Google Vision)</li>
+          <li>Cleaned, structured, and normalized unstructured datasets into business-ready formats</li>
+        </ul>
+        <div class="tl-tags">
+          <span class="tl-tag">LLMs</span><span class="tl-tag">OCR</span><span class="tl-tag">REST APIs</span><span class="tl-tag">Data Extraction</span>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-node"></div>
+        <div class="tl-period">SEP 2022 — AUG 2024</div>
+        <div class="tl-role">FREELANCE AI ENGINEER</div>
+        <div class="tl-company">Fiverr / Upwork</div>
+        <div class="tl-loc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Remote</div>
+        <ul class="tl-list">
+          <li>Designed ML models for computer vision, anomaly detection, and NLP across diverse client projects</li>
+          <li>Developed object detection models for satellite imagery using YOLO and Faster R-CNN</li>
+          <li>Built enterprise conversational AI solutions using Azure OpenAI Service and GPT-based architectures</li>
+        </ul>
+        <div class="tl-tags">
+          <span class="tl-tag">Computer Vision</span><span class="tl-tag">YOLO</span><span class="tl-tag">Azure OpenAI</span><span class="tl-tag">GPT</span><span class="tl-tag">NLP</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education" class="pad" style="background:var(--bg)">
+  <div class="inner">
+    <div style="margin-bottom:4rem" class="reveal">
+      <div class="eyebrow">Academic Background</div>
+      <div class="section-title">The <em>foundation</em></div>
+    </div>
+    <div class="edu-grid">
+      <div class="edu-card reveal" style="transition-delay:0.1s">
+        <svg class="edu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        <div class="edu-degree">MSc Artificial Intelligence &amp; Robotics</div>
+        <div class="edu-school">Università degli Studi di Roma "La Sapienza"</div>
+        <div class="edu-period">2022 – 2025 · Rome, Italy</div>
+        <div class="edu-subjects">Machine Learning · Deep Learning · Computer Vision · NLP · Retrieval-Augmented Generation · Advanced Robotics · Planning &amp; Reasoning · Intelligent Controls</div>
+      </div>
+      <div class="edu-card reveal" style="transition-delay:0.2s">
+        <svg class="edu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><circle cx="12" cy="10" r="2"/></svg>
+        <div class="edu-degree">BEng Electrical Engineering (Electronics)</div>
+        <div class="edu-school">Air University, Islamabad</div>
+        <div class="edu-period">2014 – 2018 · Islamabad, Pakistan</div>
+        <div class="edu-subjects">Control Systems · Microcontrollers · FPGA · VLSI · Analog &amp; Digital Electronics · Industrial Automation · C++ &amp; OOP · Computer Networks</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects" class="pad">
+  <div class="inner">
+    <div style="margin-bottom:4rem" class="reveal">
+      <div class="eyebrow">Selected Work</div>
+      <div class="section-title">Things I've <em>built</em></div>
+    </div>
+    <div class="proj-grid">
+
+      <div class="proj-card reveal" style="transition-delay:0s">
+        <div class="proj-num">01</div>
+        <svg class="proj-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        <div class="proj-title">Digital Twin Control Benchmark — PID vs RL</div>
+        <div class="proj-desc">An ML thermal model used as a plant surrogate (digital twin) to simulate a TEC-based cooling controller, benchmarking classical PID against reinforcement learning strategies.</div>
+        <div class="proj-tags"><span class="proj-tag">Reinforcement Learning</span><span class="proj-tag">Digital Twin</span><span class="proj-tag">PID Control</span><span class="proj-tag">Thermal Modeling</span></div>
+        <a href="https://github.com/GemaTEG/Digital-Twin-Control-Benchmark-PID-vs-RL-using-a-Predictive-Thermal-Model" target="_blank" class="proj-link">View Repository <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 13L13 1M13 1H5M13 1v8"/></svg></a>
+      </div>
+
+      <div class="proj-card reveal" style="transition-delay:0.1s">
+        <div class="proj-num">02</div>
+        <svg class="proj-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        <div class="proj-title">3D Shape Deformation via 2D Supervision</div>
+        <div class="proj-desc">A mesh deformation pipeline using PyTorch3D that optimizes 3D shapes using only 2D image guidance. Custom chamfer, silhouette, and edge-length loss functions applied via differentiable rendering.</div>
+        <div class="proj-tags"><span class="proj-tag">PyTorch3D</span><span class="proj-tag">3D Vision</span><span class="proj-tag">Differentiable Rendering</span></div>
+        <a href="https://github.com/shahkarKhan24/Shape-Deformation-and-Pytorch3d" target="_blank" class="proj-link">View Repository <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 13L13 1M13 1H5M13 1v8"/></svg></a>
+      </div>
+
+      <div class="proj-card reveal" style="transition-delay:0.2s">
+        <div class="proj-num">03</div>
+        <svg class="proj-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/></svg>
+        <div class="proj-title">Multimodal NLP — Visual Word Sense Disambiguation</div>
+        <div class="proj-desc">A multimodal pipeline using OpenAI CLIP to align image-text pairs and disambiguate polysemous words based on contextual visual clues — outperforming text-only WSD approaches.</div>
+        <div class="proj-tags"><span class="proj-tag">CLIP</span><span class="proj-tag">Multimodal NLP</span><span class="proj-tag">Vision-Language</span></div>
+        <a href="https://github.com/shahkarKhan24/Multimodal-NLP" target="_blank" class="proj-link">View Repository <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 13L13 1M13 1H5M13 1v8"/></svg></a>
+      </div>
+
+      <div class="proj-card reveal" style="transition-delay:0.05s">
+        <div class="proj-num">04</div>
+        <svg class="proj-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <div class="proj-title">Anomaly Detection via Adversarial Training</div>
+        <div class="proj-desc">An unsupervised anomaly detection framework combining GANs and Autoencoders to identify abnormal patterns in image data, evaluated using reconstruction loss heatmaps.</div>
+        <div class="proj-tags"><span class="proj-tag">GANs</span><span class="proj-tag">Autoencoders</span><span class="proj-tag">Anomaly Detection</span><span class="proj-tag">Unsupervised</span></div>
+        <a href="https://github.com/shahkarKhan24/Anomaly-Detection-Using-Adverserial-Training" target="_blank" class="proj-link">View Repository <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 13L13 1M13 1H5M13 1v8"/></svg></a>
+      </div>
+
+      <div class="proj-card reveal" style="transition-delay:0.15s">
+        <div class="proj-num">05</div>
+        <svg class="proj-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        <div class="proj-title">Natural Language Inference with Transformers</div>
+        <div class="proj-desc">Fine-tuned BERT and RoBERTa on SNLI/MNLI datasets to classify sentence pairs into entailment, contradiction, or neutral relationships with strong downstream reasoning performance.</div>
+        <div class="proj-tags"><span class="proj-tag">BERT</span><span class="proj-tag">RoBERTa</span><span class="proj-tag">NLI</span><span class="proj-tag">Hugging Face</span></div>
+        <a href="https://github.com/shahkarKhan24/Natural-Language-Inference-NLI" target="_blank" class="proj-link">View Repository <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 13L13 1M13 1H5M13 1v8"/></svg></a>
+      </div>
+
+      <div class="proj-card reveal" style="transition-delay:0.25s">
+        <div class="proj-num">06</div>
+        <svg class="proj-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        <div class="proj-title">Image-to-Image Translation with Conditional GANs</div>
+        <div class="proj-desc">Re-implementation of pix2pix — image-to-image translation using Conditional Generative Adversarial Networks for paired image synthesis tasks across multiple domains.</div>
+        <div class="proj-tags"><span class="proj-tag">Conditional GANs</span><span class="proj-tag">Image Synthesis</span><span class="proj-tag">pix2pix</span></div>
+        <a href="https://github.com/shahkarKhan24/Image-to-Image-Translation-Using-Conditional-GANs" target="_blank" class="proj-link">View Repository <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 13L13 1M13 1H5M13 1v8"/></svg></a>
+      </div>
+
+      <div class="proj-card reveal" style="transition-delay:0.1s">
+        <div class="proj-num">07</div>
+        <svg class="proj-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
+        <div class="proj-title">PDDL Numeric Planning for Factory Manufacturing</div>
+        <div class="proj-desc">Optimizes production schedules to minimize costs and maximize efficiency, ensuring timely delivery while coordinating with robotic agents using numeric PDDL planning techniques.</div>
+        <div class="proj-tags"><span class="proj-tag">PDDL</span><span class="proj-tag">AI Planning</span><span class="proj-tag">Robotics</span><span class="proj-tag">Optimization</span></div>
+        <a href="https://github.com/shahkarKhan24/PDDL_Numeric_Planning-For-Factory-Manufacturing-Process" target="_blank" class="proj-link">View Repository <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 13L13 1M13 1H5M13 1v8"/></svg></a>
+      </div>
+
+      <div class="proj-card reveal" style="transition-delay:0.2s">
+        <div class="proj-num">08</div>
+        <svg class="proj-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+        <div class="proj-title">ROS A* Path Planner in C++</div>
+        <div class="proj-desc">A robust A* path planning implementation using ROS and C++, providing optimal pathfinding for mobile robotic systems with real-time obstacle avoidance capabilities.</div>
+        <div class="proj-tags"><span class="proj-tag">ROS</span><span class="proj-tag">C++</span><span class="proj-tag">A* Algorithm</span><span class="proj-tag">Robotics</span></div>
+        <a href="https://github.com/shahkarKhan24/ROS_Path_Planner" target="_blank" class="proj-link">View Repository <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 13L13 1M13 1H5M13 1v8"/></svg></a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CERTS -->
+<section id="certs" class="pad" style="background:var(--bg)">
+  <div class="inner">
+    <div style="margin-bottom:3rem" class="reveal">
+      <div class="eyebrow">Certifications</div>
+      <div class="section-title">Cloud <em>credentials</em></div>
+    </div>
+    <div class="cert-row reveal">
+      <div class="cert-card">
+        <svg class="cert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <div class="cert-status active">In Progress</div>
+        <div class="cert-title">Microsoft AZ-900 — Azure Fundamentals</div>
+        <div class="cert-org">Microsoft · 2025</div>
+      </div>
+      <div class="cert-card">
+        <svg class="cert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+        <div class="cert-status planned">Planned 2026</div>
+        <div class="cert-title">Microsoft AI-900 — Azure AI Fundamentals</div>
+        <div class="cert-org">Microsoft · 2026</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="pad">
+  <div class="inner">
+    <div class="contact-grid">
+      <div class="reveal-left" style="transition-delay:0.1s">
+        <div class="eyebrow">Get In Touch</div>
+        <div class="contact-headline">Let's build something <em>remarkable</em></div>
+        <p class="contact-sub">Whether you're looking for an AI engineer, want to discuss a project, or just want to talk about intelligent systems — I'm always open to new conversations and opportunities.</p>
+        <a href="mailto:shahkarkhan24@gmail.com" class="btn-mag btn-fill" style="display:inline-flex"><span>Send an Email <svg class="arrow-icon" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h12M8 2l5 5-5 5"/></svg></span></a>
+      </div>
+      <div class="reveal-right" style="transition-delay:0.2s">
+        <div class="contact-items">
+          <a href="mailto:shahkarkhan24@gmail.com" class="ci">
+            <svg class="ci-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="1.5"/><polyline points="2,4 12,13 22,4"/></svg>
+            <div class="ci-body"><span class="ci-label">Email</span><span class="ci-val">shahkarkhan24@gmail.com</span></div>
+            <svg class="ci-arrow" width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 13L13 1M13 1H5M13 1v8"/></svg>
+          </a>
+          <a href="https://www.linkedin.com/in/shahkar-javid-3a5553198/" target="_blank" class="ci">
+            <svg class="ci-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.35-1.85 3.58 0 4.25 2.36 4.25 5.43v6.31zM5.34 7.43a2.06 2.06 0 110-4.12 2.06 2.06 0 010 4.12zm1.78 13.02H3.56V9h3.56v11.45z"/></svg>
+            <div class="ci-body"><span class="ci-label">LinkedIn</span><span class="ci-val">linkedin.com/in/shahkar-javid</span></div>
+            <svg class="ci-arrow" width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 13L13 1M13 1H5M13 1v8"/></svg>
+          </a>
+          <a href="https://github.com/shahkarKhan24/" target="_blank" class="ci">
+            <svg class="ci-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.49 1 .11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 013-.4c1.02.005 2.04.14 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58C20.57 21.79 24 17.3 24 12 24 5.37 18.63 0 12 0z"/></svg>
+            <div class="ci-body"><span class="ci-label">GitHub</span><span class="ci-val">github.com/shahkarKhan24</span></div>
+            <svg class="ci-arrow" width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 13L13 1M13 1H5M13 1v8"/></svg>
+          </a>
+          <a href="tel:+393338112450" class="ci">
+            <svg class="ci-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.82a19.79 19.79 0 01-3.07-8.67A2 2 0 012.18 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 8.55a16 16 0 006.57 6.57l1.62-1.62a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+            <div class="ci-body"><span class="ci-label">Phone</span><span class="ci-val">(+39) 333 811 2450</span></div>
+            <svg class="ci-arrow" width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 13L13 1M13 1H5M13 1v8"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft-copy">© 2026 Shahkar Javid. All rights reserved.</div>
+  <div class="ft-right"><div class="ft-dot"></div>Based in Perugia, Italy</div>
+</footer>
+
+<style>
+.tw-cursor{display:inline-block;width:2px;height:1em;background:var(--c);margin-left:2px;vertical-align:middle;animation:blink 0.9s step-end infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+</style>
+
+<script>
+// ── CURSOR ──
+const cur = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px'});
+(function animRing(){rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animRing)})();
+
+// ── CANVAS BACKGROUND ──
+(function(){
+  const cv=document.getElementById('bg-canvas');
+  const ctx=cv.getContext('2d');
+  let W,H,pts=[];
+  const N=55,DIST=130;
+  function resize(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight}
+  function Pt(){this.x=Math.random()*W;this.y=Math.random()*H;this.vx=(Math.random()-.5)*.25;this.vy=(Math.random()-.5)*.25;this.r=Math.random()*1.2+.4;this.col=['rgba(0,229,255,','rgba(124,106,247,','rgba(255,77,0,'][Math.floor(Math.random()*3)];this.a=Math.random()*.35+.1}
+  Pt.prototype.tick=function(){this.x+=this.vx;this.y+=this.vy;if(this.x<0||this.x>W)this.vx*=-1;if(this.y<0||this.y>H)this.vy*=-1};
+  for(let i=0;i<N;i++)pts.push(new Pt());
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // subtle dot grid
+    ctx.fillStyle='rgba(0,229,255,0.018)';
+    for(let x=0;x<W;x+=50)for(let y=0;y<H;y+=50){ctx.beginPath();ctx.arc(x,y,1,0,Math.PI*2);ctx.fill()}
+    for(let i=0;i<pts.length;i++){
+      pts[i].tick();
+      const p=pts[i];
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=p.col+p.a+')';ctx.fill();
+      for(let j=i+1;j<pts.length;j++){
+        const q=pts[j];const dx=p.x-q.x,dy=p.y-q.y,d=Math.sqrt(dx*dx+dy*dy);
+        if(d<DIST){const a=(1-d/DIST)*0.06;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.strokeStyle='rgba(0,229,255,'+a+')';ctx.lineWidth=.5;ctx.stroke()}
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize',()=>{resize();pts=[];for(let i=0;i<N;i++)pts.push(new Pt())});
+  resize();draw();
+})();
+
+// ── TYPEWRITER ──
+(function(){
+  const el=document.getElementById('typewriter');
+  const phrases=['AI & Software Engineer','ML Systems Architect','Computer Vision Engineer','NLP & LLM Specialist','Industrial AI Developer'];
+  let pi=0,ci=0,deleting=false,wait=0;
+  function tick(){
+    const phrase=phrases[pi];
+    if(wait>0){wait--;setTimeout(tick,80);return}
+    if(!deleting){
+      el.textContent=phrase.slice(0,++ci);
+      if(ci===phrase.length){wait=38;deleting=true}
+    }else{
+      el.textContent=phrase.slice(0,--ci);
+      if(ci===0){deleting=false;pi=(pi+1)%phrases.length}
+    }
+    setTimeout(tick,deleting?45:90);
+  }
+  setTimeout(tick,1800);
+})();
+
+// ── TEXT SCRAMBLE on hero name ──
+(function(){
+  const el=document.getElementById('scramble-target');
+  const original='JAVID';
+  const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ01234';
+  let done=false;
+  function scramble(){
+    if(done)return;
+    let iter=0;
+    const iv=setInterval(()=>{
+      el.textContent=original.split('').map((c,i)=>{
+        if(i<Math.floor(iter/2.5))return c;
+        return chars[Math.floor(Math.random()*chars.length)];
+      }).join('');
+      if(iter>=original.length*2.5){clearInterval(iv);el.textContent=original;done=true}
+      iter++;
+    },45);
+  }
+  setTimeout(scramble,600);
+  setInterval(()=>{done=false;scramble()},6000);
+})();
+
+// ── COUNTER ANIMATION ──
+function animateCount(el){
+  const target=+el.dataset.count;
+  const dur=1400;const start=performance.now();
+  function step(t){
+    const p=Math.min((t-start)/dur,1);
+    const ease=1-Math.pow(1-p,3);
+    el.textContent=Math.floor(ease*target)+(p<1?'':'+');
+    if(p<1)requestAnimationFrame(step);
+    else el.textContent=target+'+';
+  }
+  requestAnimationFrame(step);
+}
+
+// ── SKILL BAR ANIMATION ──
+function animateBars(card){
+  card.querySelectorAll('.sk-bar-fill').forEach(bar=>{
+    bar.style.width=bar.dataset.width+'%';
+  });
+}
+
+// ── NAV SCROLL ──
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>{nav.classList.toggle('scrolled',window.scrollY>40)});
+
+// ── CARD 3D TILT ──
+document.querySelectorAll('.sk-card,.proj-card,.edu-card').forEach(card=>{
+  const glow=card.querySelector('.sk-card-glow');
+  card.addEventListener('mousemove',e=>{
+    const r=card.getBoundingClientRect();
+    const x=(e.clientX-r.left)/r.width-.5;
+    const y=(e.clientY-r.top)/r.height-.5;
+    card.style.transform=`perspective(600px) rotateX(${(-y*8).toFixed(1)}deg) rotateY(${(x*8).toFixed(1)}deg) translateY(-4px)`;
+    if(glow){glow.style.left=((e.clientX-r.left))+'px';glow.style.top=((e.clientY-r.top))+'px'}
+  });
+  card.addEventListener('mouseleave',()=>{
+    card.style.transform='';
+    card.style.transition='transform 0.5s cubic-bezier(0.34,1.56,0.64,1)';
+  });
+  card.addEventListener('mouseenter',()=>{card.style.transition='transform 0.1s'});
+});
+
+// ── INTERSECTION OBSERVER ──
+const io=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const el=e.target;
+      // stagger by sibling index
+      const delay=parseFloat(el.style.transitionDelay||0);
+      setTimeout(()=>{
+        el.classList.add('visible');
+        // counters
+        el.querySelectorAll&&el.querySelectorAll('[data-count]').forEach(animateCount);
+        // skill bars
+        if(el.classList.contains('sk-card'))animateBars(el);
+      },delay*1000);
+      io.unobserve(el);
+    }
+  });
+},{threshold:0.15});
+
+document.querySelectorAll('.reveal,.reveal-left,.reveal-right,.tl-item').forEach(el=>io.observe(el));
+
+// ── TIMELINE LINE FILL ──
+(function(){
+  const fill=document.getElementById('tl-fill');
+  const tl=fill?.closest('.tl');
+  if(!tl||!fill)return;
+  function update(){
+    const r=tl.getBoundingClientRect();
+    const winH=window.innerHeight;
+    const pct=Math.max(0,Math.min(1,(winH-r.top)/r.height));
+    fill.style.height=(pct*100)+'%';
+  }
+  window.addEventListener('scroll',update,{passive:true});
+  update();
+})();
+
+// ── MAGNETIC BUTTONS ──
+document.querySelectorAll('.btn-mag').forEach(btn=>{
+  btn.addEventListener('mousemove',e=>{
+    const r=btn.getBoundingClientRect();
+    const x=(e.clientX-r.left-r.width/2)*0.25;
+    const y=(e.clientY-r.top-r.height/2)*0.25;
+    btn.style.transform=`translate(${x}px,${y}px)`;
+  });
+  btn.addEventListener('mouseleave',()=>{
+    btn.style.transform='';
+    btn.style.transition='transform 0.5s cubic-bezier(0.34,1.56,0.64,1)';
+  });
+  btn.addEventListener('mouseenter',()=>{btn.style.transition='transform 0.1s'});
+});
+
+// ── ACTIVE NAV ──
+const secs=document.querySelectorAll('section[id]');
+const navAs=document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll',()=>{
+  let cur='';secs.forEach(s=>{if(window.scrollY>=s.offsetTop-300)cur=s.id});
+  navAs.forEach(a=>{a.style.color=a.getAttribute('href')==='#'+cur?'var(--c)':''});
+},{passive:true});
+</script>
+</body>
+</html>
