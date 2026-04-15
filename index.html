@@ -12,21 +12,21 @@
    VARIABLES & RESET
 ═══════════════════════════════════════════════ */
 :root {
-  --bg:     #04040a;
-  --bg2:    #070710;
-  --bg3:    #0b0b18;
-  --s1:     #0f0f1e;
-  --s2:     #161628;
-  --b:      rgba(100,100,220,0.1);
-  --b2:     rgba(0,220,255,0.18);
-  --c:      #00dcff;
-  --c2:     #ff4500;
-  --c3:     #8b5cf6;
-  --c4:     #22d3ee;
-  --cg:     #10b981;
-  --t:      #ccd0e8;
-  --t2:     #6b7099;
-  --t3:     #2e2e55;
+  --bg:     #060610;
+  --bg2:    #09091a;
+  --bg3:    #0d0d20;
+  --s1:     #111128;
+  --s2:     #181835;
+  --b:      rgba(120,120,255,0.14);
+  --b2:     rgba(0,220,255,0.22);
+  --c:      #00e5ff;
+  --c2:     #ff5520;
+  --c3:     #a078ff;
+  --c4:     #34d9ee;
+  --cg:     #22ee99;
+  --t:      #dde2f5;
+  --t2:     #8890bb;
+  --t3:     #444470;
   --w:      #ffffff;
   --font-d: 'Bebas Neue', sans-serif;
   --font-b: 'Epilogue', sans-serif;
@@ -102,7 +102,7 @@ body:has(a:hover) #cur-ring1, body:has(button:hover) #cur-ring1 { width: 48px; h
 ═══════════════════════════════════════════════ */
 #neural-canvas {
   position: fixed; inset: 0; z-index: 0;
-  pointer-events: none;
+  pointer-events: none; opacity: 0.85;
 }
 .grain {
   position: fixed; inset: 0; z-index: 1; pointer-events: none;
@@ -1065,7 +1065,7 @@ footer {
         <div class="hex-ring hex-ring-1"></div>
         <!-- Photo -->
         <div class="hex-photo">
-          <img id="hero-photo" src=".photo" alt="Shahkar Javid"/>
+          <img id="hero-photo" src="https://avatars.githubusercontent.com/u/79767784?v=4" alt="Shahkar Javid"/>
           <div class="hex-photo-tint"></div>
           <div class="hex-scan-line"></div>
         </div>
@@ -1435,12 +1435,12 @@ footer {
      ║  DELETE THIS BLOCK BEFORE DEPLOYING     ║
      ║  (photo upload helper — local use only) ║
      ╚══════════════════════════════════════════╝ -->
-<!-- <div id="upload-ui">
+<div id="upload-ui">
   <div class="up-title">// PHOTO_UPLOAD</div>
   <label id="upload-label" for="photo-input">Choose Photo</label>
   <input type="file" id="photo-input" accept="image/*"/>
   <div id="upload-note">Remove before deploying.<br>Then use src="./photo.jpg"</div>
-</div> -->
+</div>
 
 <!-- ══════════════════════════════════════════════════
      JAVASCRIPT — ANIMATIONS ENGINE
@@ -1489,141 +1489,223 @@ window.addEventListener('scroll', () => {
 }, { passive: true });
 
 /* ════════════════════════════════════════════
-   NEURAL NETWORK BACKGROUND
-   Proper spiking neural network visualization
+   BACKGROUND ENGINE — 3 LAYERS
+   1. Robotic dot grid with scan line
+   2. Spiking neural network
+   3. Binary 01 rain columns
 ════════════════════════════════════════════ */
-(function NeuralNet(){
+(function BgEngine(){
   const cv  = document.getElementById('neural-canvas');
   const ctx = cv.getContext('2d');
   let W, H;
-  const N_NODES = 70;
-  const CONN_DIST = 150;
-  const nodes = [];
-  const pulses = [];
 
   function resize(){
     W = cv.width  = window.innerWidth;
     H = cv.height = window.innerHeight;
+    initBinary();
   }
 
-  class Node {
+  /* ── LAYER 1: ROBOTIC DOT GRID + SCAN LINE ── */
+  let scanY = 0;
+  function drawGrid(){
+    const STEP = 44;
+    // Dots
+    for(let x=0; x<W; x+=STEP){
+      for(let y=0; y<H; y+=STEP){
+        const dist = Math.abs(y - scanY);
+        const bright = Math.max(0, 1 - dist/180);
+        const base = 0.06;
+        ctx.beginPath();
+        ctx.arc(x, y, dist < 60 ? 1.4 : 0.9, 0, Math.PI*2);
+        ctx.fillStyle = `rgba(0,220,255,${base + bright*0.22})`;
+        ctx.fill();
+      }
+    }
+    // Faint horizontal grid lines
+    for(let y=0; y<H; y+=STEP){
+      const dist=Math.abs(y-scanY);
+      const a=Math.max(0,(1-dist/160)*0.07);
+      if(a<0.005) continue;
+      ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y);
+      ctx.strokeStyle=`rgba(0,220,255,${a})`; ctx.lineWidth=0.5; ctx.stroke();
+    }
+    // Faint vertical grid lines
+    for(let x=0; x<W; x+=STEP){
+      ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H);
+      ctx.strokeStyle='rgba(0,220,255,0.025)'; ctx.lineWidth=0.4; ctx.stroke();
+    }
+    // Scan line glow
+    const sg = ctx.createLinearGradient(0, scanY-60, 0, scanY+60);
+    sg.addColorStop(0,   'rgba(0,220,255,0)');
+    sg.addColorStop(0.45,'rgba(0,220,255,0.08)');
+    sg.addColorStop(0.5, 'rgba(0,220,255,0.18)');
+    sg.addColorStop(0.55,'rgba(0,220,255,0.08)');
+    sg.addColorStop(1,   'rgba(0,220,255,0)');
+    ctx.fillStyle=sg; ctx.fillRect(0, scanY-60, W, 120);
+    scanY = (scanY + 0.7) % H;
+  }
+
+  /* ── LAYER 2: SPIKING NEURAL NETWORK ── */
+  const N_NODES = 65;
+  const CONN_DIST = 160;
+  const nodes = [];
+  const pulses = [];
+
+  class NNode {
     constructor(){
-      this.x  = Math.random()*W;
-      this.y  = Math.random()*H;
-      this.vx = (Math.random()-.5)*0.22;
-      this.vy = (Math.random()-.5)*0.22;
-      this.r  = Math.random()*1.5+0.5;
-      this.energy = 0;
-      this.firing = false;
-      this.fireTimer = 0;
+      this.reset();
+      this.x = Math.random()*W;
+      this.y = Math.random()*H;
+      this.layer = Math.floor(Math.random()*4);
+    }
+    reset(){
+      this.vx = (Math.random()-.5)*0.28;
+      this.vy = (Math.random()-.5)*0.28;
+      this.r  = Math.random()*1.8+0.6;
+      this.energy = 0; this.firing = false; this.ft = 0;
       this.threshold = Math.random()*0.4+0.5;
-      this.layer = Math.floor(Math.random()*4); // 0-3 layers
     }
     tick(){
-      this.x += this.vx; this.y += this.vy;
+      this.x+=this.vx; this.y+=this.vy;
       if(this.x<0||this.x>W) this.vx*=-1;
       if(this.y<0||this.y>H) this.vy*=-1;
-      if(this.firing){ this.fireTimer++; if(this.fireTimer>20){ this.firing=false; this.fireTimer=0; this.energy=0; } }
-      // random spontaneous firing
-      if(!this.firing && Math.random()<0.0003){ this.fire(); }
+      if(this.firing){ this.ft++; if(this.ft>18){this.firing=false;this.ft=0;this.energy=0;} }
+      if(!this.firing&&Math.random()<0.0004) this.fire();
     }
     fire(){
-      this.firing = true; this.fireTimer = 0;
-      // spawn pulses to connected nodes
-      nodes.forEach(other=>{
-        if(other===this) return;
-        const dx=other.x-this.x, dy=other.y-this.y;
-        const d=Math.sqrt(dx*dx+dy*dy);
-        if(d<CONN_DIST && Math.random()<0.4){
-          pulses.push(new Pulse(this,other));
-        }
+      this.firing=true; this.ft=0;
+      nodes.forEach(o=>{
+        if(o===this) return;
+        const d=Math.hypot(o.x-this.x, o.y-this.y);
+        if(d<CONN_DIST&&Math.random()<0.45) pulses.push(new NPulse(this,o));
       });
     }
     draw(){
-      const lColors = ['rgba(0,220,255,','rgba(139,92,246,','rgba(0,210,200,','rgba(255,69,0,'];
-      const alpha = this.firing ? 0.9 : 0.25;
-      const radius= this.firing ? this.r*2.5 : this.r;
-      ctx.beginPath();
-      ctx.arc(this.x,this.y,radius,0,Math.PI*2);
-      ctx.fillStyle = lColors[this.layer]+alpha+')';
-      ctx.fill();
+      const cols=['rgba(0,220,255,','rgba(160,120,255,','rgba(0,210,200,','rgba(255,100,50,'];
+      const a=this.firing?0.95:0.3;
+      const r=this.firing?this.r*2.8:this.r;
+      ctx.beginPath(); ctx.arc(this.x,this.y,r,0,Math.PI*2);
+      ctx.fillStyle=cols[this.layer]+a+')'; ctx.fill();
       if(this.firing){
-        ctx.beginPath(); ctx.arc(this.x,this.y,radius*4,0,Math.PI*2);
-        ctx.fillStyle = lColors[this.layer]+'0.06)'; ctx.fill();
-        ctx.beginPath(); ctx.arc(this.x,this.y,radius*2,0,Math.PI*2);
-        ctx.strokeStyle= lColors[this.layer]+'0.4)'; ctx.lineWidth=0.5; ctx.stroke();
+        ctx.beginPath(); ctx.arc(this.x,this.y,r*5,0,Math.PI*2);
+        ctx.fillStyle=cols[this.layer]+'0.07)'; ctx.fill();
+        ctx.beginPath(); ctx.arc(this.x,this.y,r*2.5,0,Math.PI*2);
+        ctx.strokeStyle=cols[this.layer]+'0.5)'; ctx.lineWidth=0.7; ctx.stroke();
       }
     }
   }
 
-  class Pulse {
-    constructor(from,to){
-      this.from=from; this.to=to;
-      this.t=0; this.speed=0.012+Math.random()*0.015;
-      this.done=false;
-    }
+  class NPulse {
+    constructor(f,t){ this.f=f; this.t=t; this.p=0; this.s=0.014+Math.random()*0.016; this.done=false; }
     tick(){
-      this.t+=this.speed;
-      if(this.t>=1){
-        this.done=true;
-        this.to.energy+=0.3;
-        if(this.to.energy>=this.to.threshold && !this.to.firing){ this.to.fire(); }
-      }
+      this.p+=this.s;
+      if(this.p>=1){ this.done=true; this.t.energy+=0.3; if(this.t.energy>=this.t.threshold&&!this.t.firing) this.t.fire(); }
     }
     draw(){
-      const x = this.from.x + (this.to.x-this.from.x)*this.t;
-      const y = this.from.y + (this.to.y-this.from.y)*this.t;
-      ctx.beginPath();
-      ctx.arc(x,y,2.5,0,Math.PI*2);
-      ctx.fillStyle=`rgba(0,220,255,${0.8*(1-this.t*0.5)})`;
-      ctx.fill();
-      ctx.beginPath(); ctx.arc(x,y,5,0,Math.PI*2);
-      ctx.fillStyle='rgba(0,220,255,0.15)'; ctx.fill();
+      const x=this.f.x+(this.t.x-this.f.x)*this.p;
+      const y=this.f.y+(this.t.y-this.f.y)*this.p;
+      const a=0.85*(1-this.p*0.4);
+      ctx.beginPath(); ctx.arc(x,y,2.8,0,Math.PI*2);
+      ctx.fillStyle=`rgba(0,220,255,${a})`; ctx.fill();
+      ctx.beginPath(); ctx.arc(x,y,6,0,Math.PI*2);
+      ctx.fillStyle=`rgba(0,220,255,${a*0.18})`; ctx.fill();
     }
   }
 
-  for(let i=0;i<N_NODES;i++) nodes.push(new Node());
-
-  function drawConnections(){
+  function drawNeuralConnections(){
     for(let i=0;i<nodes.length;i++){
       for(let j=i+1;j<nodes.length;j++){
         const a=nodes[i], b=nodes[j];
-        const dx=a.x-b.x, dy=a.y-b.y;
-        const d=Math.sqrt(dx*dx+dy*dy);
+        const d=Math.hypot(a.x-b.x,a.y-b.y);
         if(d<CONN_DIST){
-          const str=(1-d/CONN_DIST);
+          const str=1-d/CONN_DIST;
           const fired=a.firing||b.firing;
-          const alpha=fired ? str*0.18 : str*0.055;
+          const alpha=fired?str*0.22:str*0.07;
           ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
-          ctx.strokeStyle=fired
-            ? `rgba(0,220,255,${alpha})`
-            : `rgba(100,100,200,${alpha})`;
-          ctx.lineWidth=fired ? 0.8 : 0.4;
-          ctx.stroke();
+          ctx.strokeStyle=fired?`rgba(0,220,255,${alpha})`:`rgba(130,110,220,${alpha})`;
+          ctx.lineWidth=fired?0.9:0.4; ctx.stroke();
         }
       }
     }
   }
 
-  // Initial burst to seed activity
-  function seed(){ nodes.filter((_,i)=>i%8===0).forEach(n=>n.fire()); }
+  for(let i=0;i<N_NODES;i++) nodes.push(new NNode());
+  function seedNeural(){ nodes.filter((_,i)=>i%7===0).forEach(n=>n.fire()); }
 
+  /* ── LAYER 3: BINARY RAIN ── */
+  const BINARY_COLS = [];
+  const COL_WIDTH = 28;
+
+  function initBinary(){
+    BINARY_COLS.length = 0;
+    const numCols = Math.ceil(W / COL_WIDTH);
+    for(let i=0;i<numCols;i++){
+      BINARY_COLS.push({
+        x:       i * COL_WIDTH + COL_WIDTH/2,
+        y:       Math.random() * H,
+        speed:   0.3 + Math.random() * 0.7,
+        chars:   Array.from({length: 18}, ()=> Math.random()<0.5?'1':'0'),
+        opacity: 0.06 + Math.random() * 0.1,
+        active:  Math.random() < 0.35,
+        timer:   Math.random() * 200,
+        highlight: Math.floor(Math.random()*18),
+        hlTimer: 0,
+      });
+    }
+  }
+
+  function drawBinary(){
+    ctx.font = '10px "JetBrains Mono", monospace';
+    ctx.textAlign = 'center';
+    BINARY_COLS.forEach(col=>{
+      if(!col.active){ col.timer--; if(col.timer<=0){col.active=true; col.timer=0;} return; }
+      col.y += col.speed;
+      if(col.y > H + 200){ col.y = -180; col.active = Math.random()<0.6; col.timer = Math.random()*150+50; col.opacity = 0.06+Math.random()*0.1; }
+      col.hlTimer++;
+      if(col.hlTimer > 12){ col.hlTimer=0; col.highlight=(col.highlight+1)%col.chars.length; col.chars[col.highlight]=Math.random()<0.5?'1':'0'; }
+      col.chars.forEach((ch, i)=>{
+        const cy = col.y - i*14;
+        if(cy < -14 || cy > H+14) return;
+        const isHead = i===0;
+        const isBright = i <= 2;
+        const a = isHead ? col.opacity*3.5 : isBright ? col.opacity*2 : col.opacity*(1-i/col.chars.length*0.7);
+        if(a < 0.01) return;
+        ctx.fillStyle = isHead
+          ? `rgba(200,245,255,${Math.min(a,0.85)})`
+          : i===col.highlight
+            ? `rgba(0,220,255,${Math.min(a*2.5,0.6)})`
+            : `rgba(0,185,220,${a})`;
+        ctx.fillText(ch, col.x, cy);
+      });
+    });
+    ctx.textAlign = 'left';
+  }
+
+  /* ── MAIN DRAW LOOP ── */
   function draw(){
     ctx.clearRect(0,0,W,H);
-    drawConnections();
+
+    // Layer 1: grid
+    drawGrid();
+
+    // Layer 2: neural connections + nodes
+    drawNeuralConnections();
     nodes.forEach(n=>{ n.tick(); n.draw(); });
     for(let i=pulses.length-1;i>=0;i--){
       pulses[i].tick(); pulses[i].draw();
       if(pulses[i].done) pulses.splice(i,1);
     }
+
+    // Layer 3: binary rain (on top, semi-transparent)
+    drawBinary();
+
     requestAnimationFrame(draw);
   }
 
-  window.addEventListener('resize',()=>{ resize(); });
-  resize(); seed();
+  window.addEventListener('resize',()=>{ resize(); nodes.length=0; pulses.length=0; for(let i=0;i<N_NODES;i++) nodes.push(new NNode()); });
+  resize(); seedNeural();
   draw();
-  // Re-seed periodically
-  setInterval(seed, 4000);
+  setInterval(seedNeural, 4500);
 })();
 
 /* ════════════════════════════════════════════
