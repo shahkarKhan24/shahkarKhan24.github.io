@@ -917,6 +917,7 @@ footer {
 /* ═══════════════════════════════════════════════
    PHOTO UPLOAD HELPER
 ═══════════════════════════════════════════════ */
+/* upload-ui commented out — photo loads from ./photo.jpg
 #upload-ui {
   position: fixed; bottom: 1.5rem; left: 1.5rem; z-index: 400;
   background: var(--s1); border: 1px solid rgba(0,220,255,0.25);
@@ -934,6 +935,7 @@ footer {
 #upload-label:hover { border-color: var(--c); color: var(--c); }
 #photo-input { display: none; }
 #upload-note { font-size: 0.52rem; color: var(--t3); }
+*/
 
 /* ═══════════════════════════════════════════════
    RESPONSIVE
@@ -1065,7 +1067,7 @@ footer {
         <div class="hex-ring hex-ring-1" id="px-ring1"></div>
         <!-- Photo -->
         <div class="hex-photo" id="px-photo">
-          <img id="hero-photo" src="https://avatars.githubusercontent.com/u/79767784?v=4" alt="Shahkar Javid"/>
+          <img id="hero-photo" src="./photo.jpg" alt="Shahkar Javid"/>
           <div class="hex-photo-tint"></div>
           <div class="hex-scan-line"></div>
         </div>
@@ -1708,16 +1710,14 @@ footer {
   <div class="ft-right"><div class="ft-pulse"></div>Perugia, Italy</div>
 </footer>
 
-<!-- ╔══════════════════════════════════════════╗
-     ║  DELETE THIS BLOCK BEFORE DEPLOYING     ║
-     ║  (photo upload helper — local use only) ║
-     ╚══════════════════════════════════════════╝ -->
-<!--<div id="upload-ui">
+<!-- PHOTO UPLOAD BLOCK — commented out, photo now loads from ./photo.jpg
+<div id="upload-ui">
   <div class="up-title">// PHOTO_UPLOAD</div>
   <label id="upload-label" for="photo-input">Choose Photo</label>
   <input type="file" id="photo-input" accept="image/*"/>
   <div id="upload-note">Remove before deploying.<br>Then use src="./photo.jpg"</div>
-</div> -->
+</div>
+-->
 
 <!-- ══════════════════════════════════════════════════
      JAVASCRIPT — ANIMATIONS ENGINE
@@ -2368,18 +2368,19 @@ document.querySelectorAll('.btn').forEach(btn=>{
 })();
 
 /* ════════════════════════════════════════════
-   PHOTO UPLOAD
-════════════════════════════════════════════ */
+   PHOTO UPLOAD — commented out, using ./photo.jpg directly
+/* 
 document.getElementById('photo-input').addEventListener('change',function(e){
   const file=e.target.files[0]; if(!file) return;
   const reader=new FileReader();
   reader.onload=ev=>{
     const src=ev.target.result;
     const img=document.getElementById('hero-photo');
-    if(img){ img.src='./photo.jpg'; img.style.display='block'; }
+    if(img){ img.src=src; img.style.display='block'; }
   };
   reader.readAsDataURL(file);
 });
+*/
 
 /* ════════════════════════════════════════════
    HERO PARALLAX — multi-layer depth on mousemove
