@@ -1040,31 +1040,31 @@ footer {
     </div>
 
     <!-- RIGHT — HEX PHOTO -->
-    <div class="hero-photo-section">
+    <div class="hero-photo-section" id="px-photo-section">
       <div class="hex-photo-wrap">
         <!-- Orbital rings -->
-        <div class="orbital orbital-1"><div class="orbital-dot"></div></div>
-        <div class="orbital orbital-2"><div class="orbital-dot"></div></div>
+        <div class="orbital orbital-1" id="px-orbital1"><div class="orbital-dot"></div></div>
+        <div class="orbital orbital-2" id="px-orbital2"><div class="orbital-dot"></div></div>
         <!-- HUD brackets -->
-        <div class="hud-bracket tl"></div>
-        <div class="hud-bracket tr"></div>
-        <div class="hud-bracket bl"></div>
-        <div class="hud-bracket br"></div>
+        <div class="hud-bracket tl" id="px-bracket-tl"></div>
+        <div class="hud-bracket tr" id="px-bracket-tr"></div>
+        <div class="hud-bracket bl" id="px-bracket-bl"></div>
+        <div class="hud-bracket br" id="px-bracket-br"></div>
         <!-- Data readouts -->
-        <div class="hud-readout top-right">
+        <div class="hud-readout top-right" id="px-readout-tr">
           <div>MODE <span class="hud-val">ACTIVE</span></div>
           <div>LOC  <span class="hud-val">PERUGIA·IT</span></div>
           <div>ROLE <span class="hud-val">AI·ENG</span></div>
         </div>
-        <div class="hud-readout bot-left">
+        <div class="hud-readout bot-left" id="px-readout-bl">
           <div>STATUS <span class="hud-val">ONLINE</span></div>
           <div>STACK  <span class="hud-val">PYTORCH</span></div>
         </div>
         <!-- Hex rings -->
-        <div class="hex-ring hex-ring-2"></div>
-        <div class="hex-ring hex-ring-1"></div>
+        <div class="hex-ring hex-ring-2" id="px-ring2"></div>
+        <div class="hex-ring hex-ring-1" id="px-ring1"></div>
         <!-- Photo -->
-        <div class="hex-photo">
+        <div class="hex-photo" id="px-photo">
           <img id="hero-photo" src="https://avatars.githubusercontent.com/u/79767784?v=4" alt="Shahkar Javid"/>
           <div class="hex-photo-tint"></div>
           <div class="hex-scan-line"></div>
@@ -1425,6 +1425,283 @@ footer {
     </div>
   </div>
 </section>
+
+<!-- ══════════════════════════════════
+     CHAT WIDGET
+══════════════════════════════════ -->
+<style>
+/* ── CHAT WIDGET ── */
+#chat-bubble {
+  position: fixed; bottom: 2rem; right: 2rem; z-index: 500;
+  width: 52px; height: 52px;
+  background: var(--c); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: none; box-shadow: 0 0 0 0 rgba(0,229,255,0.4);
+  animation: chatPulse 2.5s infinite;
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), background 0.3s;
+}
+#chat-bubble:hover { transform: scale(1.12); background: var(--c4); }
+#chat-bubble svg { transition: transform 0.3s; }
+#chat-bubble.open svg.icon-chat { display: none; }
+#chat-bubble.open svg.icon-close { display: block !important; }
+@keyframes chatPulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(0,229,255,0.35); }
+  60%      { box-shadow: 0 0 0 14px rgba(0,229,255,0); }
+}
+/* Notification badge */
+#chat-badge {
+  position: absolute; top: -3px; right: -3px;
+  width: 16px; height: 16px; background: var(--c2);
+  border-radius: 50%; border: 2px solid var(--bg);
+  font-family: var(--font-m); font-size: 0.52rem;
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  animation: blink 2s infinite;
+}
+
+/* Chat panel */
+#chat-panel {
+  position: fixed; bottom: 6.2rem; right: 2rem; z-index: 499;
+  width: 360px; max-height: 520px;
+  background: var(--bg3);
+  border: 1px solid var(--b2);
+  display: flex; flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 30px rgba(0,229,255,0.06);
+  transform: scale(0.92) translateY(20px); transform-origin: bottom right;
+  opacity: 0; pointer-events: none;
+  transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%);
+}
+#chat-panel.open {
+  transform: scale(1) translateY(0);
+  opacity: 1; pointer-events: all;
+}
+
+/* Header */
+#chat-header {
+  padding: 1rem 1.2rem 0.85rem;
+  border-bottom: 1px solid var(--b);
+  display: flex; align-items: center; gap: 0.8rem;
+  flex-shrink: 0;
+  background: var(--s1);
+  position: relative;
+}
+#chat-header::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1.5px;
+  background: linear-gradient(90deg, var(--c), var(--c3), transparent);
+}
+.chat-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--c), var(--c3));
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-d); font-size: 1rem; color: var(--bg);
+  flex-shrink: 0; font-weight: 700; letter-spacing: 0.05em;
+}
+.chat-header-info { flex: 1; min-width: 0; }
+.chat-header-name {
+  font-family: var(--font-m); font-size: 0.75rem;
+  color: var(--w); font-weight: 600; letter-spacing: 0.08em;
+}
+.chat-header-status {
+  font-family: var(--font-m); font-size: 0.58rem;
+  color: var(--t3); letter-spacing: 0.1em;
+  display: flex; align-items: center; gap: 0.4rem; margin-top: 0.15rem;
+}
+.chat-status-dot {
+  width: 5px; height: 5px; background: var(--cg);
+  border-radius: 50%; box-shadow: 0 0 5px var(--cg);
+  animation: blink 1.8s infinite;
+}
+.chat-powered {
+  font-family: var(--font-m); font-size: 0.52rem;
+  color: var(--t3); letter-spacing: 0.1em; flex-shrink: 0;
+}
+.chat-powered span { color: var(--c3); }
+
+/* Messages */
+#chat-messages {
+  flex: 1; overflow-y: auto; padding: 1rem;
+  display: flex; flex-direction: column; gap: 0.75rem;
+  scrollbar-width: thin; scrollbar-color: var(--t3) transparent;
+}
+#chat-messages::-webkit-scrollbar { width: 3px; }
+#chat-messages::-webkit-scrollbar-thumb { background: var(--t3); border-radius: 2px; }
+
+.msg {
+  display: flex; gap: 0.6rem; align-items: flex-end;
+  animation: msgIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
+}
+.msg.user { flex-direction: row-reverse; }
+@keyframes msgIn { from { opacity:0; transform:translateY(10px) scale(0.95); } to { opacity:1; transform:none; } }
+
+.msg-avatar {
+  width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-m); font-size: 0.55rem; font-weight: 700;
+}
+.msg.bot  .msg-avatar { background: linear-gradient(135deg,var(--c),var(--c3)); color: var(--bg); }
+.msg.user .msg-avatar { background: var(--s2); border: 1px solid var(--b); color: var(--t2); }
+
+.msg-bubble {
+  max-width: 78%; padding: 0.65rem 0.9rem;
+  font-family: var(--font-b); font-size: 0.82rem; line-height: 1.65;
+  border-radius: 2px; position: relative;
+}
+.msg.bot  .msg-bubble {
+  background: var(--s1); border: 1px solid var(--b);
+  color: var(--t); border-bottom-left-radius: 0;
+}
+.msg.user .msg-bubble {
+  background: rgba(0,229,255,0.1); border: 1px solid rgba(0,229,255,0.25);
+  color: var(--t); border-bottom-right-radius: 0;
+}
+.msg-time {
+  font-family: var(--font-m); font-size: 0.5rem;
+  color: var(--t3); letter-spacing: 0.08em;
+  margin-top: 0.25rem; text-align: right;
+}
+.msg.bot .msg-time { text-align: left; }
+
+/* Typing indicator */
+.typing-bubble {
+  display: flex; gap: 4px; align-items: center;
+  padding: 0.65rem 0.9rem;
+}
+.typing-bubble span {
+  width: 5px; height: 5px; background: var(--c);
+  border-radius: 50%; opacity: 0.4;
+  animation: typingDot 1.2s infinite;
+}
+.typing-bubble span:nth-child(2) { animation-delay: 0.2s; }
+.typing-bubble span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typingDot { 0%,60%,100%{opacity:0.3;transform:scale(1)} 30%{opacity:1;transform:scale(1.3)} }
+
+/* Quick suggestions */
+#chat-suggestions {
+  padding: 0.6rem 0.8rem; display: flex; flex-wrap: wrap;
+  gap: 0.4rem; border-top: 1px solid var(--b); flex-shrink: 0;
+  background: var(--bg3);
+}
+.sug-btn {
+  font-family: var(--font-m); font-size: 0.58rem;
+  padding: 0.28rem 0.65rem; border: 1px solid var(--b);
+  color: var(--t2); background: var(--s1); cursor: none;
+  letter-spacing: 0.06em; transition: all 0.2s;
+  white-space: nowrap;
+}
+.sug-btn:hover { border-color: var(--c); color: var(--c); background: rgba(0,229,255,0.06); }
+
+/* Input bar */
+#chat-input-wrap {
+  padding: 0.75rem; border-top: 1px solid var(--b);
+  display: flex; gap: 0.6rem; align-items: center; flex-shrink: 0;
+  background: var(--s1);
+}
+#chat-input {
+  flex: 1; background: var(--bg3); border: 1px solid var(--b);
+  color: var(--t); font-family: var(--font-m); font-size: 0.72rem;
+  padding: 0.6rem 0.8rem; outline: none; resize: none;
+  transition: border-color 0.2s; letter-spacing: 0.04em;
+  max-height: 80px; line-height: 1.5;
+}
+#chat-input::placeholder { color: var(--t3); }
+#chat-input:focus { border-color: rgba(0,229,255,0.4); }
+#chat-send {
+  width: 34px; height: 34px; background: var(--c); border: none;
+  display: flex; align-items: center; justify-content: center;
+  cursor: none; flex-shrink: 0;
+  transition: background 0.2s, transform 0.2s;
+  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%);
+}
+#chat-send:hover { background: var(--c4); transform: scale(1.05); }
+#chat-send:disabled { background: var(--t3); transform: none; }
+#chat-send svg { color: var(--bg); }
+
+/* API key setup screen */
+#chat-setup {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 1.5rem; text-align: center; gap: 1rem;
+}
+.setup-title {
+  font-family: var(--font-d); font-size: 1.4rem;
+  color: var(--w); letter-spacing: 0.06em;
+}
+.setup-sub {
+  font-family: var(--font-m); font-size: 0.65rem;
+  color: var(--t2); line-height: 1.7; letter-spacing: 0.06em;
+}
+.setup-sub a { color: var(--c); text-decoration: none; }
+.setup-sub a:hover { text-decoration: underline; }
+#api-key-input {
+  width: 100%; background: var(--bg); border: 1px solid var(--b);
+  color: var(--t); font-family: var(--font-m); font-size: 0.68rem;
+  padding: 0.7rem 0.9rem; outline: none; letter-spacing: 0.08em;
+  transition: border-color 0.2s;
+}
+#api-key-input:focus { border-color: rgba(0,229,255,0.4); }
+#api-key-input::placeholder { color: var(--t3); }
+#api-key-save {
+  width: 100%; padding: 0.75rem;
+  background: var(--c); color: var(--bg);
+  border: none; font-family: var(--font-m); font-size: 0.72rem;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  cursor: none; transition: background 0.2s;
+}
+#api-key-save:hover { background: var(--c4); }
+.setup-note {
+  font-family: var(--font-m); font-size: 0.56rem;
+  color: var(--t3); line-height: 1.6; letter-spacing: 0.06em;
+}
+</style>
+
+<!-- Chat Bubble -->
+<div id="chat-bubble" title="Ask Shahkar">
+  <div id="chat-badge">1</div>
+  <svg class="icon-chat" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#060610" stroke-width="2.2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+  <svg class="icon-close" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#060610" stroke-width="2.5" style="display:none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+</div>
+
+<!-- Chat Panel -->
+<div id="chat-panel">
+  <div id="chat-header">
+    <div class="chat-avatar">SJ</div>
+    <div class="chat-header-info">
+      <div class="chat-header-name">ASK SHAHKAR</div>
+      <div class="chat-header-status"><div class="chat-status-dot"></div>AI Assistant · Portfolio</div>
+    </div>
+    <div class="chat-powered">by <span>Gemini</span></div>
+  </div>
+
+  <!-- Setup screen (shown if no API key) -->
+  <div id="chat-setup">
+    <div class="setup-title">GET FREE API KEY</div>
+    <div class="setup-sub">
+      This chat uses <strong style="color:var(--c)">Google Gemini</strong> — completely free.<br>
+      Get your key in 30 sec at<br>
+      <a href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com</a>
+    </div>
+    <input id="api-key-input" type="password" placeholder="Paste your Gemini API key..."/>
+    <button id="api-key-save">Activate Chat</button>
+    <div class="setup-note">Key is stored only in your browser.<br>Never sent anywhere except Google's API.</div>
+  </div>
+
+  <!-- Chat screen (hidden until key saved) -->
+  <div id="chat-screen" style="display:none;flex:1;flex-direction:column;overflow:hidden">
+    <div id="chat-messages"></div>
+    <div id="chat-suggestions">
+      <button class="sug-btn">What's your stack?</button>
+      <button class="sug-btn">Open to work?</button>
+      <button class="sug-btn">Best project?</button>
+      <button class="sug-btn">Reach out</button>
+    </div>
+    <div id="chat-input-wrap">
+      <textarea id="chat-input" rows="1" placeholder="Ask me anything..."></textarea>
+      <button id="chat-send">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
 
 <footer>
   <div class="ft-left">© 2026 Shahkar Javid — All rights reserved.</div>
@@ -2103,6 +2380,335 @@ document.getElementById('photo-input').addEventListener('change',function(e){
   };
   reader.readAsDataURL(file);
 });
+
+/* ════════════════════════════════════════════
+   HERO PARALLAX — multi-layer depth on mousemove
+════════════════════════════════════════════ */
+(function HeroParallax(){
+  const hero = document.getElementById('hero');
+  if(!hero) return;
+
+  // [element id, x-factor, y-factor, extra transform]
+  const layers = [
+    { id: 'px-photo',        xf: 0.012, yf: 0.015 },
+    { id: 'px-ring1',        xf: 0.020, yf: 0.022 },
+    { id: 'px-ring2',        xf: 0.032, yf: 0.030 },
+    { id: 'px-orbital1',     xf: 0.050, yf: 0.045 },
+    { id: 'px-orbital2',     xf:-0.040, yf:-0.038 },
+    { id: 'px-bracket-tl',   xf:-0.028, yf:-0.025 },
+    { id: 'px-bracket-tr',   xf: 0.028, yf:-0.025 },
+    { id: 'px-bracket-bl',   xf:-0.028, yf: 0.025 },
+    { id: 'px-bracket-br',   xf: 0.028, yf: 0.025 },
+    { id: 'px-readout-tr',   xf: 0.038, yf:-0.030 },
+    { id: 'px-readout-bl',   xf:-0.038, yf: 0.030 },
+  ];
+
+  // Hero text layers
+  const textLayers = [
+    { sel: '.hero-tag',    xf: 0.006, yf: 0.008 },
+    { sel: '.hero-name',   xf: 0.009, yf: 0.010 },
+    { sel: '.hero-subtitle',xf: 0.007, yf: 0.009 },
+    { sel: '.hero-desc',   xf: 0.005, yf: 0.007 },
+    { sel: '.hero-ctas',   xf: 0.004, yf: 0.005 },
+  ];
+
+  const els    = layers.map(l => ({ el: document.getElementById(l.id), ...l }))
+                       .filter(l => l.el);
+  const txtEls = textLayers.map(l => ({ el: hero.querySelector(l.sel), ...l }))
+                            .filter(l => l.el);
+
+  // Current and target positions for smooth lerp
+  let tx = 0, ty = 0, cx = 0, cy = 0;
+  let active = false;
+
+  hero.addEventListener('mousemove', e => {
+    const r = hero.getBoundingClientRect();
+    tx = e.clientX - r.left - r.width  / 2;
+    ty = e.clientY - r.top  - r.height / 2;
+    active = true;
+  });
+  hero.addEventListener('mouseleave', () => {
+    tx = 0; ty = 0;
+  });
+
+  function tickParallax(){
+    // Smooth lerp
+    cx += (tx - cx) * 0.08;
+    cy += (ty - cy) * 0.08;
+
+    if(Math.abs(cx) > 0.3 || Math.abs(cy) > 0.3){
+      els.forEach(l => {
+        const dx = cx * l.xf;
+        const dy = cy * l.yf;
+        // Preserve existing CSS transform (e.g. rotation on orbitals)
+        // by using a CSS variable approach
+        l.el.style.setProperty('--px', dx+'px');
+        l.el.style.setProperty('--py', dy+'px');
+        l.el.style.willChange = 'transform';
+        // Apply only translate on top
+        const base = l.el.style.transform.replace(/translate3d\([^)]+\)/g,'').replace(/translateX\([^)]+\)/g,'').replace(/translateY\([^)]+\)/g,'');
+        l.el.style.transform = (base||'') + ` translate3d(${dx}px,${dy}px,0)`;
+      });
+
+      txtEls.forEach(l => {
+        const dx = cx * l.xf;
+        const dy = cy * l.yf;
+        l.el.style.transform = `translate3d(${dx}px,${dy}px,0)`;
+      });
+    }
+    requestAnimationFrame(tickParallax);
+  }
+  tickParallax();
+})();
+
+
+/* ════════════════════════════════════════════
+   CHAT WIDGET — Gemini Free API
+════════════════════════════════════════════ */
+(function ChatWidget(){
+  const STORAGE_KEY = 'sj_gemini_key';
+  const SYSTEM_PROMPT = `You are a friendly, concise AI assistant embedded in Shahkar Javid's personal portfolio website. You speak on behalf of Shahkar. Always be professional, warm, and brief (2-4 sentences max per reply unless a longer answer is clearly needed).
+
+Here is everything about Shahkar:
+
+PERSONAL:
+- Full name: Shahkar Javid
+- Location: Perugia, Italy
+- Nationality: Pakistani
+- Email: shahkarkhan24@gmail.com
+- Phone: (+39) 333 811 2450
+- GitHub: github.com/shahkarKhan24
+- LinkedIn: linkedin.com/in/shahkar-javid-3a5553198
+
+CURRENT ROLE:
+- AI & Software Engineer at GemaTEG SRL, Perugia (Aug 2025 – Present)
+- Works on AI-driven adaptive control systems combining ML with classical PID control for thermoelectric cooling of HPC/GPU servers
+- Designs Linux-based server monitoring with Prometheus, time-series forecasting, thermal profiling of LLMs
+
+PAST EXPERIENCE:
+- AI Intern at Radoff (Dec 2024 – May 2025, Remote): ML pipelines, AWS, MLOps, CI/CD, Apache Airflow
+- AI Developer Intern at BSA Underwriting Agency (Feb–Mar 2025, Rome): LLM data extraction, OCR pipelines
+- Freelance AI Engineer on Fiverr/Upwork (2022–2024): CV, NLP, satellite imagery, chatbots, Azure OpenAI
+
+EDUCATION:
+- MSc Artificial Intelligence & Robotics — La Sapienza, Rome (2022–2025)
+- BEng Electrical Engineering (Electronics) — Air University, Islamabad (2014–2018)
+
+SKILLS:
+- ML/DL: PyTorch, TensorFlow, Keras, Scikit-learn, XGBoost, Hugging Face, LangChain, PyTorch3D
+- CV/NLP: OpenCV, YOLO, Faster R-CNN, CLIP, BERT, GPT, LLaMA, RoBERTa, SpaCy
+- Cloud: AWS (EC2, S3, SageMaker, Lambda), Azure OpenAI, Docker, Jenkins, Prometheus, Airflow
+- Robotics: ROS, PDDL, PID Control, FPGA, A* planning, C++
+- Languages: Python, C++, Bash, SQL, HTML/CSS
+
+PROJECTS (all on GitHub):
+1. Digital Twin Control Benchmark (PID vs RL) — GemaTEG
+2. 3D Shape Deformation via PyTorch3D
+3. Multimodal NLP — Visual Word Sense Disambiguation (CLIP)
+4. Anomaly Detection via GANs + Autoencoders
+5. Natural Language Inference (BERT, RoBERTa)
+6. Image-to-Image Translation (pix2pix / Conditional GANs)
+7. PDDL Numeric Planning for Factory Manufacturing
+8. ROS A* Path Planner in C++
+
+AVAILABILITY:
+- Open to new AI engineering roles, remote work, and relocation
+- Interested in industrial AI, MLOps, computer vision, NLP, and robotics applications
+
+CERTIFICATIONS:
+- Microsoft AZ-900 (In Progress)
+- Microsoft AI-900 (Planned 2026)
+
+Answer questions about Shahkar's background, skills, experience, availability, and projects. If asked something not covered above, politely say you don't have that info and suggest emailing shahkarkhan24@gmail.com. Never make up facts. Keep answers concise and friendly.`;
+
+  // DOM refs
+  const bubble    = document.getElementById('chat-bubble');
+  const panel     = document.getElementById('chat-panel');
+  const setup     = document.getElementById('chat-setup');
+  const screen    = document.getElementById('chat-screen');
+  const messages  = document.getElementById('chat-messages');
+  const input     = document.getElementById('chat-input');
+  const sendBtn   = document.getElementById('chat-send');
+  const badge     = document.getElementById('chat-badge');
+  const apiInput  = document.getElementById('api-key-input');
+  const apiSave   = document.getElementById('api-key-save');
+  const sugs      = document.querySelectorAll('.sug-btn');
+
+  let apiKey = localStorage.getItem(STORAGE_KEY) || '';
+  let history = []; // [{role,parts}] for Gemini
+  let isOpen  = false;
+  let thinking = false;
+
+  // Init: check if key exists
+  function initView(){
+    if(apiKey){
+      setup.style.display = 'none';
+      screen.style.display = 'flex';
+      if(messages.children.length === 0) addBotMsg("Hey! 👋 I'm Shahkar's AI assistant. Ask me anything about his skills, projects, experience, or availability.");
+    } else {
+      setup.style.display = 'flex';
+      screen.style.display = 'none';
+    }
+  }
+
+  // Toggle panel
+  bubble.addEventListener('click', () => {
+    isOpen = !isOpen;
+    panel.classList.toggle('open', isOpen);
+    bubble.classList.toggle('open', isOpen);
+    badge.style.display = 'none';
+    if(isOpen && apiKey) setTimeout(()=>input.focus(), 350);
+  });
+
+  // Save API key
+  apiSave.addEventListener('click', () => {
+    const k = apiInput.value.trim();
+    if(!k){ apiInput.style.borderColor='var(--c2)'; return; }
+    apiKey = k;
+    localStorage.setItem(STORAGE_KEY, k);
+    initView();
+  });
+  apiInput.addEventListener('keydown', e => { if(e.key==='Enter') apiSave.click(); });
+
+  // Suggestion buttons
+  sugs.forEach(btn => {
+    btn.addEventListener('click', () => {
+      if(thinking) return;
+      sendMessage(btn.textContent.trim());
+    });
+  });
+
+  // Send on Enter (not shift+enter)
+  input.addEventListener('keydown', e => {
+    if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); handleSend(); }
+  });
+  // Auto-resize textarea
+  input.addEventListener('input', () => {
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 80) + 'px';
+  });
+  sendBtn.addEventListener('click', handleSend);
+
+  function handleSend(){
+    const text = input.value.trim();
+    if(!text || thinking) return;
+    input.value = ''; input.style.height = 'auto';
+    sendMessage(text);
+  }
+
+  function sendMessage(text){
+    addUserMsg(text);
+    // Hide suggestions after first interaction
+    document.getElementById('chat-suggestions').style.display = 'none';
+    callGemini(text);
+  }
+
+  function addUserMsg(text){
+    const time = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    const div = document.createElement('div');
+    div.className = 'msg user';
+    div.innerHTML = `
+      <div class="msg-avatar">YOU</div>
+      <div>
+        <div class="msg-bubble">${escHtml(text)}</div>
+        <div class="msg-time">${time}</div>
+      </div>`;
+    messages.appendChild(div);
+    scrollBottom();
+  }
+
+  function addBotMsg(text){
+    const time = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    const div = document.createElement('div');
+    div.className = 'msg bot';
+    div.innerHTML = `
+      <div class="msg-avatar">SJ</div>
+      <div>
+        <div class="msg-bubble">${text}</div>
+        <div class="msg-time">${time}</div>
+      </div>`;
+    messages.appendChild(div);
+    scrollBottom();
+    return div;
+  }
+
+  function showTyping(){
+    const div = document.createElement('div');
+    div.className = 'msg bot'; div.id = 'typing-indicator';
+    div.innerHTML = `<div class="msg-avatar">SJ</div><div class="msg-bubble"><div class="typing-bubble"><span></span><span></span><span></span></div></div>`;
+    messages.appendChild(div);
+    scrollBottom();
+  }
+  function hideTyping(){ document.getElementById('typing-indicator')?.remove(); }
+
+  async function callGemini(userText){
+    if(!apiKey) return;
+    thinking = true;
+    sendBtn.disabled = true;
+    showTyping();
+
+    // Build conversation history for Gemini
+    history.push({ role:'user', parts:[{ text: userText }] });
+
+    const body = {
+      system_instruction: { parts:[{ text: SYSTEM_PROMPT }] },
+      contents: history,
+      generationConfig: {
+        temperature: 0.75,
+        maxOutputTokens: 350,
+        topP: 0.9,
+      }
+    };
+
+    try {
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+        { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) }
+      );
+      const data = await res.json();
+      hideTyping();
+
+      if(!res.ok){
+        const errMsg = data?.error?.message || 'API error. Check your key.';
+        addBotMsg(`⚠️ ${escHtml(errMsg)}`);
+        thinking = false; sendBtn.disabled = false; return;
+      }
+
+      const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't generate a response.";
+      // Add model reply to history
+      history.push({ role:'model', parts:[{ text: reply }] });
+      // Keep history manageable
+      if(history.length > 20) history = history.slice(-20);
+
+      addBotMsg(formatReply(reply));
+    } catch(err) {
+      hideTyping();
+      addBotMsg('⚠️ Network error. Please check your connection.');
+    }
+
+    thinking = false;
+    sendBtn.disabled = false;
+    if(isOpen) input.focus();
+  }
+
+  // Convert markdown-ish response to basic HTML
+  function formatReply(text){
+    return escHtml(text)
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      .replace(/\n/g, '<br>');
+  }
+
+  function escHtml(s){
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function scrollBottom(){
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  initView();
+})();
 
 </script>
 </body>
