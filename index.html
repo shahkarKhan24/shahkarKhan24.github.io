@@ -68,7 +68,25 @@ section{position:relative;z-index:2}
 
 /* ── HERO ── */
 #hero{min-height:100vh;display:flex;align-items:center;padding:0 5rem;padding-top:6rem;overflow:hidden}
-.hero-inner{max-width:1200px;margin:0 auto;width:100%;display:grid;grid-template-columns:1.1fr 0.9fr;gap:5rem;align-items:center}
+.hero-inner{max-width:1200px;margin:0 auto;width:100%;display:grid;grid-template-columns:1.1fr 0.75fr;gap:6rem;align-items:center}
+/* hero photo */
+.hero-photo-wrap{position:relative;display:flex;justify-content:center}
+.hero-photo-frame{position:relative;width:320px;max-width:100%}
+.hero-photo-frame::before{content:'';position:absolute;top:-12px;left:-12px;right:12px;bottom:12px;border:1px solid rgba(0,229,255,0.2);z-index:0;transition:all 0.4s}
+.hero-photo-frame::after{content:'';position:absolute;top:12px;left:12px;right:-12px;bottom:-12px;border:1px solid rgba(124,106,247,0.15);z-index:0}
+.hero-photo-frame:hover::before{top:-16px;left:-16px;right:16px;bottom:16px}
+.hero-photo-img{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top center;display:block;position:relative;z-index:1;filter:grayscale(15%) contrast(1.05);border:1px solid var(--b)}
+.hero-photo-overlay{position:absolute;bottom:0;left:0;right:0;z-index:2;padding:1.4rem 1.2rem;background:linear-gradient(to top,rgba(5,5,8,0.92) 0%,transparent 100%)}
+.hero-photo-loc{font-family:var(--font-mono);font-size:0.6rem;color:var(--t2);letter-spacing:0.15em;text-transform:uppercase;display:flex;align-items:center;gap:0.5rem}
+.hero-photo-loc svg{color:var(--c);flex-shrink:0}
+.hero-photo-status{display:flex;align-items:center;gap:0.5rem;margin-top:0.4rem}
+.hero-status-dot{width:6px;height:6px;background:#22c55e;border-radius:50%;flex-shrink:0;box-shadow:0 0 6px rgba(34,197,94,0.6);animation:pulseDot 2s infinite}
+.hero-status-text{font-family:var(--font-mono);font-size:0.58rem;color:var(--t2);letter-spacing:0.1em}
+.hero-photo-corner{position:absolute;z-index:3;width:20px;height:20px}
+.hero-photo-corner.tl{top:-1px;left:-1px;border-top:2px solid var(--c);border-left:2px solid var(--c)}
+.hero-photo-corner.tr{top:-1px;right:-1px;border-top:2px solid var(--c);border-right:2px solid var(--c)}
+.hero-photo-corner.bl{bottom:-1px;left:-1px;border-bottom:2px solid var(--c);border-left:2px solid var(--c)}
+.hero-photo-corner.br{bottom:-1px;right:-1px;border-bottom:2px solid var(--c);border-right:2px solid var(--c)}
 .hero-tag{font-family:var(--font-mono);font-size:0.68rem;color:var(--c);letter-spacing:0.25em;text-transform:uppercase;display:flex;align-items:center;gap:0.8rem;margin-bottom:2rem;opacity:0;animation:slideRight 0.9s 0.2s cubic-bezier(0.16,1,0.3,1) forwards}
 .hero-tag::before{content:'';display:block;width:3rem;height:1px;background:var(--c)}
 .hero-tag-dot{width:6px;height:6px;background:var(--c2);border-radius:50%;animation:pulseDot 2s infinite}
@@ -335,36 +353,26 @@ footer{background:var(--bg);padding:2rem 5rem;border-top:1px solid var(--b);disp
         </a>
       </div>
     </div>
-    <div class="hero-right">
-      <div class="hero-visual">
-        <div class="hero-card">
-          <div class="card-header">CURRENT_STATUS.JSON</div>
-          <div class="stats-grid">
-            <div class="stat-cell"><div class="stat-val" data-count="3">0</div><div class="stat-key">Years Active</div></div>
-            <div class="stat-cell"><div class="stat-val" data-count="10">0</div><div class="stat-key">AI Projects</div></div>
-            <div class="stat-cell"><div class="stat-val" data-count="2">0</div><div class="stat-key">Degrees</div></div>
-            <div class="stat-cell"><div class="stat-val" data-count="4">0</div><div class="stat-key">Companies</div></div>
-          </div>
-          <div class="stack-bar">
-            <div class="stack-label">CORE_STACK</div>
-            <div class="stack-chips">
-              <span class="chip">PyTorch</span><span class="chip">TensorFlow</span><span class="chip">Python</span>
-              <span class="chip">AWS</span><span class="chip">Prometheus</span><span class="chip">LangChain</span>
-              <span class="chip">ROS</span><span class="chip">FastAPI</span><span class="chip">C++</span><span class="chip">Docker</span>
+    <div class="hero-right" style="opacity:0;animation:fadeScale 1.2s 0.7s cubic-bezier(0.16,1,0.3,1) forwards">
+      <div class="hero-photo-wrap">
+        <div class="hero-photo-frame">
+          <img class="hero-photo-img" src="https://avatars.githubusercontent.com/u/79767784?v=4" alt="Shahkar Javid"/>
+          <div class="hero-photo-overlay">
+            <div class="hero-photo-loc">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              Perugia, Italy
+            </div>
+            <div class="hero-photo-status">
+              <div class="hero-status-dot"></div>
+              <span class="hero-status-text">Available for opportunities</span>
             </div>
           </div>
+          <div class="hero-photo-corner tl"></div>
+          <div class="hero-photo-corner tr"></div>
+          <div class="hero-photo-corner bl"></div>
+          <div class="hero-photo-corner br"></div>
         </div>
       </div>
-      <!-- Decorative SVG -->
-      <svg class="hero-deco" width="300" height="300" viewBox="0 0 300 300" fill="none">
-        <circle cx="150" cy="150" r="140" stroke="white" stroke-width="0.5"/>
-        <circle cx="150" cy="150" r="100" stroke="white" stroke-width="0.5"/>
-        <circle cx="150" cy="150" r="60" stroke="white" stroke-width="0.5"/>
-        <line x1="150" y1="10" x2="150" y2="290" stroke="white" stroke-width="0.5"/>
-        <line x1="10" y1="150" x2="290" y2="150" stroke="white" stroke-width="0.5"/>
-        <line x1="51" y1="51" x2="249" y2="249" stroke="white" stroke-width="0.5"/>
-        <line x1="249" y1="51" x2="51" y2="249" stroke="white" stroke-width="0.5"/>
-      </svg>
     </div>
   </div>
 </section>
@@ -382,7 +390,7 @@ footer{background:var(--bg);padding:2rem 5rem;border-top:1px solid var(--b);disp
           <div class="img-accent"></div>
           <div class="about-badge">
             <div class="badge-line">LOCATION</div>
-            <div class="badge-val">Perugia<span>, IT</span></div>
+            <div class="badge-val">Perugia<span>, Italy</span></div>
           </div>
         </div>
       </div>
@@ -913,8 +921,6 @@ const io=new IntersectionObserver((entries)=>{
       const delay=parseFloat(el.style.transitionDelay||0);
       setTimeout(()=>{
         el.classList.add('visible');
-        // counters
-        el.querySelectorAll&&el.querySelectorAll('[data-count]').forEach(animateCount);
         // skill bars
         if(el.classList.contains('sk-card'))animateBars(el);
       },delay*1000);
