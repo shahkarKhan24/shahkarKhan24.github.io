@@ -918,7 +918,7 @@ footer {
    PHOTO UPLOAD HELPER
 ═══════════════════════════════════════════════ */
 #upload-ui {
-  position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 1000;
+  position: fixed; bottom: 1.5rem; left: 1.5rem; z-index: 400;
   background: var(--s1); border: 1px solid rgba(0,220,255,0.25);
   padding: 0.9rem 1.1rem;
   font-family: var(--font-m); font-size: 0.6rem; color: var(--t3);
@@ -2385,80 +2385,87 @@ document.getElementById('photo-input').addEventListener('change',function(e){
    HERO PARALLAX — multi-layer depth on mousemove
 ════════════════════════════════════════════ */
 (function HeroParallax(){
-  const hero = document.getElementById('hero');
-  if(!hero) return;
+  const hero        = document.getElementById('hero');
+  const photoSection= document.getElementById('px-photo-section');
+  if(!hero || !photoSection) return;
 
-  // [element id, x-factor, y-factor, extra transform]
-  const layers = [
-    { id: 'px-photo',        xf: 0.012, yf: 0.015 },
-    { id: 'px-ring1',        xf: 0.020, yf: 0.022 },
-    { id: 'px-ring2',        xf: 0.032, yf: 0.030 },
-    { id: 'px-orbital1',     xf: 0.050, yf: 0.045 },
-    { id: 'px-orbital2',     xf:-0.040, yf:-0.038 },
-    { id: 'px-bracket-tl',   xf:-0.028, yf:-0.025 },
-    { id: 'px-bracket-tr',   xf: 0.028, yf:-0.025 },
-    { id: 'px-bracket-bl',   xf:-0.028, yf: 0.025 },
-    { id: 'px-bracket-br',   xf: 0.028, yf: 0.025 },
-    { id: 'px-readout-tr',   xf: 0.038, yf:-0.030 },
-    { id: 'px-readout-bl',   xf:-0.038, yf: 0.030 },
+  let tx=0, ty=0, cx=0, cy=0;
+
+  /*
+   * ELEMENT GROUPS:
+   *
+   * "free"     — no base CSS transform, safe to set translate3d directly
+   * "centered" — have base  translate(-50%,-50%)  from CSS (hex-rings)
+   *              we preserve that centering in the parallax transform
+   * "orbitals" — skipped: CSS animation uses transform, overriding it
+   *              breaks spinSlow rotation + centering
+   * "text"     — hero text on the left side, subtle counter-movement
+   */
+
+  const freeEls = [
+    { id:'px-photo',       xf: 0.022, yf: 0.020 },   // photo — moves most
+    { id:'px-bracket-tl',  xf:-0.018, yf:-0.016 },
+    { id:'px-bracket-tr',  xf: 0.018, yf:-0.016 },
+    { id:'px-bracket-bl',  xf:-0.018, yf: 0.016 },
+    { id:'px-bracket-br',  xf: 0.018, yf: 0.016 },
+    { id:'px-readout-tr',  xf: 0.030, yf:-0.024 },
+    { id:'px-readout-bl',  xf:-0.030, yf: 0.024 },
   ];
 
-  // Hero text layers
-  const textLayers = [
-    { sel: '.hero-tag',    xf: 0.006, yf: 0.008 },
-    { sel: '.hero-name',   xf: 0.009, yf: 0.010 },
-    { sel: '.hero-subtitle',xf: 0.007, yf: 0.009 },
-    { sel: '.hero-desc',   xf: 0.005, yf: 0.007 },
-    { sel: '.hero-ctas',   xf: 0.004, yf: 0.005 },
+  // hex-ring CSS: position:absolute; top:50%; left:50%; transform:translate(-50%,-50%)
+  // We must keep that -50%,-50% base and ADD the parallax offset
+  const centeredEls = [
+    { id:'px-ring1', xf: 0.012, yf: 0.011 },
+    { id:'px-ring2', xf: 0.019, yf: 0.017 },
   ];
 
-  const els    = layers.map(l => ({ el: document.getElementById(l.id), ...l }))
-                       .filter(l => l.el);
-  const txtEls = textLayers.map(l => ({ el: hero.querySelector(l.sel), ...l }))
-                            .filter(l => l.el);
+  const textEls = [
+    { sel:'.hero-tag',      xf: 0.006, yf: 0.007 },
+    { sel:'.hero-name',     xf: 0.009, yf: 0.010 },
+    { sel:'.hero-subtitle', xf: 0.007, yf: 0.008 },
+    { sel:'.hero-desc',     xf: 0.005, yf: 0.006 },
+    { sel:'.hero-ctas',     xf: 0.004, yf: 0.005 },
+    { sel:'.hero-socials',  xf: 0.003, yf: 0.004 },
+  ];
 
-  // Current and target positions for smooth lerp
-  let tx = 0, ty = 0, cx = 0, cy = 0;
-  let active = false;
+  const free    = freeEls.map(l=>({el:document.getElementById(l.id),...l})).filter(l=>l.el);
+  const centered= centeredEls.map(l=>({el:document.getElementById(l.id),...l})).filter(l=>l.el);
+  const texts   = textEls.map(l=>({el:hero.querySelector(l.sel),...l})).filter(l=>l.el);
 
-  hero.addEventListener('mousemove', e => {
-    const r = hero.getBoundingClientRect();
-    tx = e.clientX - r.left - r.width  / 2;
-    ty = e.clientY - r.top  - r.height / 2;
-    active = true;
+  hero.addEventListener('mousemove', e=>{
+    const r=hero.getBoundingClientRect();
+    tx = e.clientX - r.left - r.width/2;
+    ty = e.clientY - r.top  - r.height/2;
   });
-  hero.addEventListener('mouseleave', () => {
-    tx = 0; ty = 0;
-  });
+  hero.addEventListener('mouseleave',()=>{ tx=0; ty=0; });
 
-  function tickParallax(){
-    // Smooth lerp
-    cx += (tx - cx) * 0.08;
-    cy += (ty - cy) * 0.08;
+  function tick(){
+    // Smooth lerp toward target
+    cx += (tx-cx)*0.07;
+    cy += (ty-cy)*0.07;
 
-    if(Math.abs(cx) > 0.3 || Math.abs(cy) > 0.3){
-      els.forEach(l => {
-        const dx = cx * l.xf;
-        const dy = cy * l.yf;
-        // Preserve existing CSS transform (e.g. rotation on orbitals)
-        // by using a CSS variable approach
-        l.el.style.setProperty('--px', dx+'px');
-        l.el.style.setProperty('--py', dy+'px');
-        l.el.style.willChange = 'transform';
-        // Apply only translate on top
-        const base = l.el.style.transform.replace(/translate3d\([^)]+\)/g,'').replace(/translateX\([^)]+\)/g,'').replace(/translateY\([^)]+\)/g,'');
-        l.el.style.transform = (base||'') + ` translate3d(${dx}px,${dy}px,0)`;
-      });
+    // Whole photo section — very gentle uniform float
+    photoSection.style.transform = `translate3d(${cx*0.006}px,${cy*0.006}px,0)`;
 
-      txtEls.forEach(l => {
-        const dx = cx * l.xf;
-        const dy = cy * l.yf;
-        l.el.style.transform = `translate3d(${dx}px,${dy}px,0)`;
-      });
-    }
-    requestAnimationFrame(tickParallax);
+    // Free elements — direct translate (no base transform conflict)
+    free.forEach(l=>{
+      l.el.style.transform = `translate3d(${cx*l.xf}px,${cy*l.yf}px,0)`;
+    });
+
+    // Centered elements — MUST preserve translate(-50%,-50%) centering
+    centered.forEach(l=>{
+      const dx=cx*l.xf, dy=cy*l.yf;
+      l.el.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+    });
+
+    // Text — subtle opposite drift for depth illusion
+    texts.forEach(l=>{
+      l.el.style.transform = `translate3d(${cx*l.xf}px,${cy*l.yf}px,0)`;
+    });
+
+    requestAnimationFrame(tick);
   }
-  tickParallax();
+  tick();
 })();
 
 
