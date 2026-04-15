@@ -1712,12 +1712,12 @@ footer {
      ║  DELETE THIS BLOCK BEFORE DEPLOYING     ║
      ║  (photo upload helper — local use only) ║
      ╚══════════════════════════════════════════╝ -->
-<div id="upload-ui">
+<!--<div id="upload-ui">
   <div class="up-title">// PHOTO_UPLOAD</div>
   <label id="upload-label" for="photo-input">Choose Photo</label>
   <input type="file" id="photo-input" accept="image/*"/>
   <div id="upload-note">Remove before deploying.<br>Then use src="./photo.jpg"</div>
-</div>
+</div> -->
 
 <!-- ══════════════════════════════════════════════════
      JAVASCRIPT — ANIMATIONS ENGINE
@@ -2376,7 +2376,7 @@ document.getElementById('photo-input').addEventListener('change',function(e){
   reader.onload=ev=>{
     const src=ev.target.result;
     const img=document.getElementById('hero-photo');
-    if(img){ img.src=src; img.style.display='block'; }
+    if(img){ img.src='./photo.jpg'; img.style.display='block'; }
   };
   reader.readAsDataURL(file);
 });
